@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-test-lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle  # basic cache; gradle action below adds more smarts
+      
+      # Recommended Gradle integration + caching & build scans
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run checks (includes ktlintCheck if plugin applied)
+        run: ./gradlew --no-daemon clean check
+
+      - name: Unit tests
+        run: ./gradlew --no-daemon testDebugUnitTest
+
+      - name: Generate JaCoCo XML + HTML
+        run: ./gradlew --no-daemon jacocoTestReport
+
+      - name: Upload reports (test + coverage)
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            **/build/reports/tests/**/*
+            **/build/reports/jacoco/**/*
+          if-no-files-found: ignore
+
+      # Optional: put coverage into the PR summary (no external service)
+      - name: Coverage summary
+        if: always()
+        uses: jeantessier/code-coverage-summary-action@v1

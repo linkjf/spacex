@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.jacoco)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -19,6 +21,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -28,15 +33,59 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "11"
+
+    kotlin {
+        jvmToolchain(21)
     }
+
     buildFeatures {
         compose = true
     }
+
+    testOptions {
+        unitTests.all {
+            it.extensions.configure(org.gradle.testing.jacoco.plugins.JacocoTaskExtension::class) {
+                isIncludeNoLocationClasses = true
+            }
+        }
+    }
+
+    ktlint {
+        version.set(libs.versions.ktlintEngine)
+        verbose.set(true)
+        android.set(true)
+        outputToConsole.set(true)
+
+        reporters {
+            reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+            reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+        }
+    }
+}
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest")
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+    val javaClasses = fileTree("$buildDir/intermediates/javac/debug/classes")
+    val kotlinClasses = fileTree("$buildDir/tmp/kotlin-classes/debug")
+    classDirectories.setFrom(files(javaClasses, kotlinClasses).asFileTree.matching {
+        exclude(
+            "**/R.class",
+            "**/R$*.class",
+            "**/BuildConfig.*",
+            "**/Manifest*.*",
+            "**/*Test*.*",
+            "androidx/**"
+        )
+    })
+    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+    executionData.setFrom(fileTree(buildDir).include("**/jacoco/testDebugUnitTest.exec"))
 }
 
 dependencies {
