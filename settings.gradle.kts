@@ -22,6 +22,7 @@ dependencyResolutionManagement {
 rootProject.name = "spacex.launch"
 include(":app")
 include(":core:design-system")
+include(":core:tools")
 include(":core:mvi")
 include(":core:network")
 include(":feature:home")

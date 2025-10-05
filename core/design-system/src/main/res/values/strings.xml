@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="countdown_to_launch">Countdown to Launch</string>
+    <string name="status_counting">Counting</string>
+    <string name="status_live">LIVE</string>
+    <string name="status_launched">Launched</string>
+    <string name="status_overdue">Overdue</string>
+    <string name="live_indicator">🔴 LIVE</string>
+    <string name="launch_in_progress">Launch is currently in progress</string>
+    <string name="launched_indicator">🚀 LAUNCHED</string>
+    <string name="mission_successfully_launched">Mission successfully launched</string>
+    <string name="overdue_indicator">⏰ OVERDUE</string>
+    <string name="launch_time_has_passed">Launch time has passed</string>
+    <string name="time_unit_days">Days</string>
+    <string name="time_unit_hours">Hours</string>
+    <string name="time_unit_minutes">Minutes</string>
+    <string name="time_unit_seconds">Seconds</string>
+    <string name="content_description_button">Button</string>
+    <string name="content_description_search">Search launches</string>
+    <string name="content_description_watch">Watch launch</string>
+    <string name="content_description_play">Play</string>
+    <string name="content_description_wind">Wind</string>
+    <string name="interactive_card_watch_default">Watch launch</string>
+    <string name="interactive_card_view_details">View launch details for %1$s</string>
+    <string name="interactive_card_patch_description">%1$s patch</string>
+    <string name="tab_upcoming">Upcoming</string>
+    <string name="tab_pack">Pack</string>
+    <string name="tab_custom">Custom Tab</string>
+    <string name="launch_details_patch_description">%1$s mission patch</string>
+    <string name="launch_details_rocket">Rocket</string>
+    <string name="launch_details_launchpad">Launchpad</string>
+    <string name="launch_details_mission_type">Mission Type</string>
+    <string name="launch_details_details">Details</string>
+    <string name="launch_status_scheduled">Scheduled</string>
+    <string name="launch_status_launched">Launched</string>
+    <string name="launch_status_failed">Failed</string>
+    <string name="launch_status_cancelled">Cancelled</string>
+    <string name="launch_image_patch_default">Launch patch</string>
+    <string name="launch_image_patch_placeholder">Launch patch placeholder</string>
+    <string name="launch_image_patch_falconsat">FalconSat launch patch</string>
+    <string name="launch_list_empty_default">No launches available</string>
+    <string name="launch_list_loading_default">Loading launches...</string>
+    <string name="launch_list_empty_upcoming">No upcoming launches found</string>
+    <string name="launch_list_section_upcoming">Upcoming Launches</string>
+    <string name="error_warning_emoji">⚠️</string>
+    <string name="content_description_retry">Retry</string>
+    <string name="pagination_scroll_to_load_more">Scroll to load more</string>
+    <string name="launch_list_filtered_empty">No launches match your criteria</string>
+    <string name="launch_list_error_default">Failed to load launches. Please check your connection and try again.</string>
+    <string name="launch_list_filtered_starlink_empty">No Starlink launches found</string>
+    <string name="play_button_watch_text">Watch</string>
+    <string name="play_button_watch_content_description">Watch launch</string>
+    <string name="screen_header_search_content_description">Search</string>
+    <string name="screen_header_default_title">Launches</string>
+    <string name="screen_header_long_title">Upcoming SpaceX Launches</string>
+    
+    <!-- Weather Info -->
+    <string name="weather_info_title">Launch Weather Conditions</string>
+    <string name="weather_wind_speed_label">Wind Speed</string>
+    <string name="weather_wind_speed_unit_kmh">km/h</string>
+    <string name="weather_wind_speed_unit_mph">mph</string>
+    <string name="weather_rainfall_unit_mm">mm</string>
+    <string name="weather_rainfall_unit_inches">in</string>
+    <string name="weather_temperature_unit_celsius">°C</string>
+    <string name="weather_temperature_unit_fahrenheit">°F</string>
+    <string name="weather_visibility_unit_km">km</string>
+    <string name="weather_visibility_unit_miles">mi</string>
+    <string name="weather_metrics_wind_label">Wind</string>
+    <string name="weather_metrics_clouds_label">Clouds</string>
+    <string name="weather_metrics_rain_label">Rain</string>
+    <string name="weather_metrics_sun_label">Sun</string>
+    <string name="weather_cloud_cover_label">Cloud Cover</string>
+    <string name="weather_rainfall_label">Rainfall</string>
+    <string name="weather_temperature_label">Temperature</string>
+    <string name="weather_humidity_label">Humidity</string>
+    <string name="weather_visibility_label">Visibility</string>
+    
+    <!-- Weather Descriptions -->
+    <string name="weather_cloud_clear">Clear</string>
+    <string name="weather_cloud_partly_cloudy">Partly Cloudy</string>
+    <string name="weather_cloud_mostly_cloudy">Mostly Cloudy</string>
+    <string name="weather_cloud_overcast">Overcast</string>
+    
+    <string name="weather_rain_no_rain">No Rain</string>
+    <string name="weather_rain_light">Light Rain</string>
+    <string name="weather_rain_moderate">Moderate Rain</string>
+    <string name="weather_rain_heavy">Heavy Rain</string>
+    
+    <string name="weather_temp_freezing">Freezing</string>
+    <string name="weather_temp_cold">Cold</string>
+    <string name="weather_temp_cool">Cool</string>
+    <string name="weather_temp_warm">Warm</string>
+    <string name="weather_temp_hot">Hot</string>
+    
+    <string name="weather_humidity_dry">Dry</string>
+    <string name="weather_humidity_comfortable">Comfortable</string>
+    <string name="weather_humidity_humid">Humid</string>
+    <string name="weather_humidity_very_humid">Very Humid</string>
+    
+    <string name="weather_visibility_poor">Poor</string>
+    <string name="weather_visibility_fair">Fair</string>
+    <string name="weather_visibility_good">Good</string>
+    <string name="weather_visibility_excellent">Excellent</string>
+</resources>
