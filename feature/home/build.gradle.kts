@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.hilt)
 }
 android {
-    namespace = "com.linkjf.spacex_launch.home"
+    namespace = "com.linkjf.spacex.launch.home"
     compileSdk = 36
     defaultConfig {
         minSdk = 24

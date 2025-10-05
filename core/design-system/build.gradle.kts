@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.linkjf.spacex_launch.design_system"
+    namespace = "com.linkjf.spacex.launch.design_system"
     compileSdk = 36
 
     defaultConfig {
