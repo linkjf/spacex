@@ -8,9 +8,8 @@ import com.linkjf.spacex.launch.home.domain.model.LaunchLinks
 import com.linkjf.spacex.launch.home.domain.model.LaunchPatch
 
 object LaunchMapper {
-    
-    fun mapToDomain(dto: LaunchDto): Launch {
-        return Launch(
+    fun mapToDomain(dto: LaunchDto): Launch =
+        Launch(
             id = dto.id,
             name = dto.name,
             dateUtc = dto.dateUtc,
@@ -19,28 +18,23 @@ object LaunchMapper {
             links = dto.links?.let { mapLinksToDomain(it) },
             details = dto.details,
             success = dto.success,
-            upcoming = dto.upcoming
+            upcoming = dto.upcoming,
         )
-    }
-    
-    fun mapToDomain(dtos: List<LaunchDto>): List<Launch> {
-        return dtos.map { mapToDomain(it) }
-    }
-    
-    private fun mapLinksToDomain(dto: LaunchLinksDto): LaunchLinks {
-        return LaunchLinks(
+
+    fun mapToDomain(dtos: List<LaunchDto>): List<Launch> = dtos.map { mapToDomain(it) }
+
+    private fun mapLinksToDomain(dto: LaunchLinksDto): LaunchLinks =
+        LaunchLinks(
             patch = dto.patch?.let { mapPatchToDomain(it) },
             webcast = dto.webcast,
             youtubeId = dto.youtubeId,
             article = dto.article,
-            wikipedia = dto.wikipedia
+            wikipedia = dto.wikipedia,
         )
-    }
-    
-    private fun mapPatchToDomain(dto: LaunchPatchDto): LaunchPatch {
-        return LaunchPatch(
+
+    private fun mapPatchToDomain(dto: LaunchPatchDto): LaunchPatch =
+        LaunchPatch(
             small = dto.small,
-            large = dto.large
+            large = dto.large,
         )
-    }
 }

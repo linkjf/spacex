@@ -9,7 +9,7 @@ data class Launch(
     val links: LaunchLinks? = null,
     val details: String? = null,
     val success: Boolean? = null,
-    val upcoming: Boolean
+    val upcoming: Boolean,
 )
 
 data class LaunchLinks(
@@ -17,10 +17,10 @@ data class LaunchLinks(
     val webcast: String? = null,
     val youtubeId: String? = null,
     val article: String? = null,
-    val wikipedia: String? = null
+    val wikipedia: String? = null,
 )
 
 data class LaunchPatch(
     val small: String? = null,
-    val large: String? = null
+    val large: String? = null,
 )

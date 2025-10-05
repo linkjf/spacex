@@ -15,21 +15,15 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class HomeModule {
-    
     @Binds
     @Singleton
-    abstract fun bindLaunchRepository(
-        launchRepositoryImpl: LaunchRepositoryImpl
-    ): LaunchRepository
-    
+    abstract fun bindLaunchRepository(launchRepositoryImpl: LaunchRepositoryImpl): LaunchRepository
+
     companion object {
-        
         @Provides
         @Singleton
         fun provideSpaceXApi(
-            @Named("spacex") retrofit: Retrofit
-        ): SpaceXApi {
-            return retrofit.create(SpaceXApi::class.java)
-        }
+            @Named("spacex") retrofit: Retrofit,
+        ): SpaceXApi = retrofit.create(SpaceXApi::class.java)
     }
 }

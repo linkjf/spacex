@@ -8,17 +8,17 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LaunchRepositoryImpl @Inject constructor(
-    private val spaceXApi: SpaceXApi
-) : LaunchRepository {
-    
-    override suspend fun getUpcomingLaunches(): Result<List<Launch>> {
-        return try {
-            val launchDtos = spaceXApi.getUpcomingLaunches()
-            val launches = LaunchMapper.mapToDomain(launchDtos)
-            Result.success(launches)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+class LaunchRepositoryImpl
+    @Inject
+    constructor(
+        private val spaceXApi: SpaceXApi,
+    ) : LaunchRepository {
+        override suspend fun getUpcomingLaunches(): Result<List<Launch>> =
+            try {
+                val launchDtos = spaceXApi.getUpcomingLaunches()
+                val launches = LaunchMapper.mapToDomain(launchDtos)
+                Result.success(launches)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
     }
-}

@@ -19,61 +19,57 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
     @Provides
     @Singleton
-    fun provideJson(): Json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-        encodeDefaults = true
-    }
+    fun provideJson(): Json =
+        Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+            encodeDefaults = true
+        }
 
     @Provides
     @Singleton
     fun provideHttpLoggingInterceptor(
-        @ApplicationContext context: Context
-    ): HttpLoggingInterceptor {
-        return LoggingConfiguration.createHttpLoggingInterceptor(context)
-    }
+        @ApplicationContext context: Context,
+    ): HttpLoggingInterceptor = LoggingConfiguration.createHttpLoggingInterceptor(context)
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient {
-        return OkHttpClient.Builder()
+    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+        OkHttpClient
+            .Builder()
             .addInterceptor(loggingInterceptor)
             .connectTimeout(NetworkConstants.CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(NetworkConstants.READ_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(NetworkConstants.WRITE_TIMEOUT, TimeUnit.SECONDS)
             .build()
-    }
 
     @Provides
     @Singleton
     @Named("spacex")
     fun provideSpaceXRetrofit(
         okHttpClient: OkHttpClient,
-        json: Json
-    ): Retrofit {
-        return Retrofit.Builder()
+        json: Json,
+    ): Retrofit =
+        Retrofit
+            .Builder()
             .baseUrl(NetworkConstants.SPACEX_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(NetworkConstants.JSON_MEDIA_TYPE.toMediaType()))
             .build()
-    }
 
     @Provides
     @Singleton
     @Named("openmeteo")
     fun provideOpenMeteoRetrofit(
         okHttpClient: OkHttpClient,
-        json: Json
-    ): Retrofit {
-        return Retrofit.Builder()
+        json: Json,
+    ): Retrofit =
+        Retrofit
+            .Builder()
             .baseUrl(NetworkConstants.OPEN_METEO_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(NetworkConstants.JSON_MEDIA_TYPE.toMediaType()))
             .build()
-    }
 }
