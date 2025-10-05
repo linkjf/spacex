@@ -21,6 +21,8 @@ okhttpLogging = "5.1.0"
 ksp = "2.2.20-2.0.3"
 kotlinx-serialization-json = "1.9.0"
 androidx-hilt = "1.3.0"
+mockk = "1.14.6"
+kotlinx-coroutines-test = "1.10.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +52,8 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttpLogging" }
 okhttp-mockwebserver = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "okhttp" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
