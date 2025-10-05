@@ -391,6 +391,8 @@ google_maps_api.xml
 # Additional build outputs
 *.aar
 *.jar
+# Allow Gradle wrapper JAR (required for CI)
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.zip
