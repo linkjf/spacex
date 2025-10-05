@@ -6,3 +6,16 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.ktlint) apply false
 }
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath(libs.javapoet)
+    }
+    configurations.classpath {
+        resolutionStrategy.force("com.squareup:javapoet:1.13.0")
+    }
+}
