@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.linkjf.spacex_launch.network"
+    namespace = "com.linkjf.spacex.launch.network"
     compileSdk = 36
 
     defaultConfig {
@@ -22,7 +22,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }

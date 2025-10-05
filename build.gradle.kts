@@ -7,6 +7,14 @@ plugins {
     alias(libs.plugins.ktlint) apply false
 }
 
+subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+        android.set(true)
+        version.set("1.7.1")
+    }
+}
+
 buildscript {
     repositories {
         google()

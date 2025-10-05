@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.linkjf.spacex_launch"
+    namespace = "com.linkjf.spacex.launch"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.linkjf.spacex_launch"
+        applicationId = "com.linkjf.spacex.launch"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -30,7 +30,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -76,16 +76,18 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     }
     val javaClasses = fileTree("$buildDir/intermediates/javac/debug/classes")
     val kotlinClasses = fileTree("$buildDir/tmp/kotlin-classes/debug")
-    classDirectories.setFrom(files(javaClasses, kotlinClasses).asFileTree.matching {
-        exclude(
-            "**/R.class",
-            "**/R$*.class",
-            "**/BuildConfig.*",
-            "**/Manifest*.*",
-            "**/*Test*.*",
-            "androidx/**"
-        )
-    })
+    classDirectories.setFrom(
+        files(javaClasses, kotlinClasses).asFileTree.matching {
+            exclude(
+                "**/R.class",
+                "**/R$*.class",
+                "**/BuildConfig.*",
+                "**/Manifest*.*",
+                "**/*Test*.*",
+                "androidx/**",
+            )
+        },
+    )
     sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
     executionData.setFrom(fileTree(buildDir).include("**/jacoco/testDebugUnitTest.exec"))
 }
@@ -102,11 +104,10 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(project(":feature:home"))
-    
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-    
-    // Testing
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
