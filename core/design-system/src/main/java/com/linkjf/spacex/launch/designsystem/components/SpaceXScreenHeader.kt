@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,12 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.linkjf.spacex.launch.design_system.R
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXIcons
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTypography
+import com.linkjf.spacex.launch.designsystem.R
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXIcons
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
 
 @Composable
 fun SpaceXScreenHeader(
@@ -28,34 +28,35 @@ fun SpaceXScreenHeader(
     modifier: Modifier = Modifier,
     titleColor: Color = SpaceXColors.OnBackground,
     searchIconColor: Color = SpaceXColors.OnBackground,
-    searchContentDescription: String = stringResource(R.string.screen_header_search_content_description)
+    searchContentDescription: String = stringResource(R.string.screen_header_search_content_description),
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = SpaceXSpacing.HeaderPadding,
-                vertical = SpaceXSpacing.Small2
-            ),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = SpaceXSpacing.HeaderPadding,
+                    vertical = SpaceXSpacing.Small2,
+                ),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = title,
             style = SpaceXTypography.Typography.displayLarge,
             color = titleColor,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         IconButton(
             onClick = onSearchClick,
-            modifier = Modifier.size(SpaceXSpacing.IconMedium)
+            modifier = Modifier.size(SpaceXSpacing.IconMedium),
         ) {
             Icon(
                 imageVector = SpaceXIcons.Search,
                 contentDescription = searchContentDescription,
                 tint = searchIconColor,
-                modifier = Modifier.size(SpaceXSpacing.IconSmall)
+                modifier = Modifier.size(SpaceXSpacing.IconSmall),
             )
         }
     }
@@ -68,7 +69,7 @@ private fun SpaceXScreenHeaderPreview() {
         SpaceXScreenHeader(
             title = "Launches",
             onSearchClick = { },
-            searchContentDescription = "Search"
+            searchContentDescription = "Search",
         )
     }
 }
@@ -80,7 +81,7 @@ private fun SpaceXScreenHeaderLongTitlePreview() {
         SpaceXScreenHeader(
             title = "Upcoming SpaceX Launches",
             onSearchClick = { },
-            searchContentDescription = "Search"
+            searchContentDescription = "Search",
         )
     }
 }
@@ -94,7 +95,7 @@ private fun SpaceXScreenHeaderDarkPreview() {
             onSearchClick = { },
             titleColor = SpaceXColors.OnBackground,
             searchIconColor = SpaceXColors.Primary,
-            searchContentDescription = "Search"
+            searchContentDescription = "Search",
         )
     }
 }

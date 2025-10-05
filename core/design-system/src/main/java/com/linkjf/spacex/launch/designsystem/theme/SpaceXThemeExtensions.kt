@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.theme
+package com.linkjf.spacex.launch.designsystem.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable

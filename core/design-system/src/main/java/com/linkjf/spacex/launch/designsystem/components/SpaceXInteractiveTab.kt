@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -21,10 +21,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTypography
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
 
 @Composable
 fun SpaceXInteractiveTab(
@@ -36,49 +36,51 @@ fun SpaceXInteractiveTab(
     unselectedBackgroundColor: Color = SpaceXColors.TabBackground,
     selectedTextColor: Color = SpaceXColors.TabActiveText,
     unselectedTextColor: Color = SpaceXColors.TabInactiveText,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     val backgroundColor by animateFloatAsState(
         targetValue = if (isSelected) 1f else 0f,
         animationSpec = tween(durationMillis = SpaceXSpacing.InteractiveTabAnimationDuration),
-        label = "backgroundColor"
+        label = "backgroundColor",
     )
 
-    val animatedBackgroundColor = Color(
-        red = unselectedBackgroundColor.red + (selectedBackgroundColor.red - unselectedBackgroundColor.red) * backgroundColor,
-        green = unselectedBackgroundColor.green + (selectedBackgroundColor.green - unselectedBackgroundColor.green) * backgroundColor,
-        blue = unselectedBackgroundColor.blue + (selectedBackgroundColor.blue - unselectedBackgroundColor.blue) * backgroundColor,
-        alpha = unselectedBackgroundColor.alpha + (selectedBackgroundColor.alpha - unselectedBackgroundColor.alpha) * backgroundColor
-    )
+    val animatedBackgroundColor =
+        Color(
+            red = unselectedBackgroundColor.red + (selectedBackgroundColor.red - unselectedBackgroundColor.red) * backgroundColor,
+            green = unselectedBackgroundColor.green + (selectedBackgroundColor.green - unselectedBackgroundColor.green) * backgroundColor,
+            blue = unselectedBackgroundColor.blue + (selectedBackgroundColor.blue - unselectedBackgroundColor.blue) * backgroundColor,
+            alpha = unselectedBackgroundColor.alpha + (selectedBackgroundColor.alpha - unselectedBackgroundColor.alpha) * backgroundColor,
+        )
 
-    val animatedTextColor = Color(
-        red = unselectedTextColor.red + (selectedTextColor.red - unselectedTextColor.red) * backgroundColor,
-        green = unselectedTextColor.green + (selectedTextColor.green - unselectedTextColor.green) * backgroundColor,
-        blue = unselectedTextColor.blue + (selectedTextColor.blue - unselectedTextColor.blue) * backgroundColor,
-        alpha = unselectedTextColor.alpha + (selectedTextColor.alpha - unselectedTextColor.alpha) * backgroundColor
-    )
+    val animatedTextColor =
+        Color(
+            red = unselectedTextColor.red + (selectedTextColor.red - unselectedTextColor.red) * backgroundColor,
+            green = unselectedTextColor.green + (selectedTextColor.green - unselectedTextColor.green) * backgroundColor,
+            blue = unselectedTextColor.blue + (selectedTextColor.blue - unselectedTextColor.blue) * backgroundColor,
+            alpha = unselectedTextColor.alpha + (selectedTextColor.alpha - unselectedTextColor.alpha) * backgroundColor,
+        )
 
     Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusLarge))
-            .background(animatedBackgroundColor)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                enabled = enabled,
-                onClickLabel = text,
-                role = Role.Tab,
-                onClick = onClick
-            )
-            .padding(
-                horizontal = SpaceXSpacing.TabPadding,
-                vertical = SpaceXSpacing.Small2
-            ),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusLarge))
+                .background(animatedBackgroundColor)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    enabled = enabled,
+                    onClickLabel = text,
+                    role = Role.Tab,
+                    onClick = onClick,
+                ).padding(
+                    horizontal = SpaceXSpacing.TabPadding,
+                    vertical = SpaceXSpacing.Small2,
+                ),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
             style = SpaceXTypography.Typography.labelLarge,
-            color = animatedTextColor
+            color = animatedTextColor,
         )
     }
 }
@@ -92,13 +94,14 @@ fun SpaceXInteractiveTabSelector(
     activeTabColor: Color = SpaceXColors.TabActiveBackground,
     inactiveTabColor: Color = SpaceXColors.TabBackground,
     activeTextColor: Color = SpaceXColors.TabActiveText,
-    inactiveTextColor: Color = SpaceXColors.TabInactiveText
+    inactiveTextColor: Color = SpaceXColors.TabInactiveText,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = SpaceXSpacing.HeaderPadding),
-        horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.TabMargin)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = SpaceXSpacing.HeaderPadding),
+        horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.TabMargin),
     ) {
         tabs.forEachIndexed { index, tab ->
             SpaceXInteractiveTab(
@@ -108,7 +111,7 @@ fun SpaceXInteractiveTabSelector(
                 selectedBackgroundColor = activeTabColor,
                 unselectedBackgroundColor = inactiveTabColor,
                 selectedTextColor = activeTextColor,
-                unselectedTextColor = inactiveTextColor
+                unselectedTextColor = inactiveTextColor,
             )
         }
     }
@@ -120,17 +123,17 @@ private fun SpaceXInteractiveTabPreview() {
     SpaceXTheme {
         Row(
             horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.TabMargin),
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         ) {
             SpaceXInteractiveTab(
                 text = "Upcoming",
                 isSelected = true,
-                onClick = { }
+                onClick = { },
             )
             SpaceXInteractiveTab(
                 text = "Pack",
                 isSelected = false,
-                onClick = { }
+                onClick = { },
             )
         }
     }
@@ -143,7 +146,7 @@ private fun SpaceXInteractiveTabSelectorPreview() {
         SpaceXInteractiveTabSelector(
             tabs = listOf("Upcoming", "Pack"),
             selectedIndex = 0,
-            onTabSelected = { }
+            onTabSelected = { },
         )
     }
 }
@@ -155,7 +158,7 @@ private fun SpaceXInteractiveTabSelectorSecondSelectedPreview() {
         SpaceXInteractiveTabSelector(
             tabs = listOf("Upcoming", "Pack"),
             selectedIndex = 1,
-            onTabSelected = { }
+            onTabSelected = { },
         )
     }
 }
@@ -172,7 +175,7 @@ private fun SpaceXInteractiveTabCustomPreview() {
             unselectedBackgroundColor = SpaceXColors.SurfaceVariant,
             selectedTextColor = SpaceXColors.OnBackground,
             unselectedTextColor = SpaceXColors.OnSurfaceVariant,
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         )
     }
 }

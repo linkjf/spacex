@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -25,18 +25,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import com.linkjf.spacex.launch.design_system.R
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTypography
+import com.linkjf.spacex.launch.designsystem.R
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
 
 data class InteractiveLaunchData(
     val id: String,
     val name: String,
     val date: String,
     val status: String,
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
 )
 
 @Composable
@@ -49,7 +49,7 @@ fun SpaceXInteractiveLaunchCardWithResources(
     textColor: Color = SpaceXColors.OnSurface,
     dividerColor: Color = SpaceXColors.Divider,
     enabled: Boolean = true,
-    isPressed: Boolean = false
+    isPressed: Boolean = false,
 ) {
     SpaceXInteractiveLaunchCard(
         launch = launch,
@@ -63,10 +63,11 @@ fun SpaceXInteractiveLaunchCardWithResources(
         isPressed = isPressed,
         watchButtonContentDescription = stringResource(R.string.interactive_card_watch_default),
         onClickLabel = stringResource(R.string.interactive_card_view_details, launch.name),
-        patchContentDescription = stringResource(
-            R.string.interactive_card_patch_description,
-            launch.name
-        )
+        patchContentDescription =
+            stringResource(
+                R.string.interactive_card_patch_description,
+                launch.name,
+            ),
     )
 }
 
@@ -83,50 +84,52 @@ fun SpaceXInteractiveLaunchCard(
     isPressed: Boolean = false,
     watchButtonContentDescription: String = "Watch launch",
     onClickLabel: String = "View launch details",
-    patchContentDescription: String = "Launch patch"
+    patchContentDescription: String = "Launch patch",
 ) {
     val scale by animateFloatAsState(
         targetValue = if (isPressed) SpaceXSpacing.InteractiveCardPressedScale else 1f,
         animationSpec = tween(durationMillis = SpaceXSpacing.InteractiveCardAnimationDuration),
-        label = "scale"
+        label = "scale",
     )
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .scale(scale)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                enabled = enabled,
-                onClickLabel = onClickLabel,
-                role = Role.Button,
-                onClick = onClick
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .scale(scale)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    enabled = enabled,
+                    onClickLabel = onClickLabel,
+                    role = Role.Button,
+                    onClick = onClick,
+                ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = backgroundColor,
             ),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
-        ),
-        shape = RoundedCornerShape(SpaceXSpacing.BorderRadiusMedium)
+        shape = RoundedCornerShape(SpaceXSpacing.BorderRadiusMedium),
     ) {
         Column(
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 ) {
                     Text(
                         text = launch.name,
                         style = SpaceXTypography.Typography.titleMedium,
-                        color = textColor
+                        color = textColor,
                     )
                     Text(
                         text = launch.date,
                         style = SpaceXTypography.Typography.bodyMedium,
-                        color = SpaceXColors.OnSurfaceVariant
+                        color = SpaceXColors.OnSurfaceVariant,
                     )
                 }
 
@@ -134,31 +137,31 @@ fun SpaceXInteractiveLaunchCard(
                     onClick = onWatchClick,
                     iconColor = SpaceXColors.OnSurface,
                     enabled = enabled,
-                    contentDescription = watchButtonContentDescription
+                    contentDescription = watchButtonContentDescription,
                 )
             }
 
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = SpaceXSpacing.Small2),
                 thickness = SpaceXSpacing.DividerThickness,
-                color = dividerColor
+                color = dividerColor,
             )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = launch.status,
                     style = SpaceXTypography.Typography.labelMedium,
-                    color = SpaceXColors.OnSurfaceVariant
+                    color = SpaceXColors.OnSurfaceVariant,
                 )
 
                 SpaceXLaunchImage(
                     imageUrl = launch.imageUrl,
                     contentDescription = patchContentDescription,
-                    modifier = Modifier.size(SpaceXSpacing.LaunchImageSize)
+                    modifier = Modifier.size(SpaceXSpacing.LaunchImageSize),
                 )
             }
         }
@@ -172,11 +175,11 @@ fun SpaceXInteractiveCardGrid(
     onWatchClick: (InteractiveLaunchData) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    watchButtonContentDescription: String = "Watch launch"
+    watchButtonContentDescription: String = "Watch launch",
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.CardMargin)
+        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.CardMargin),
     ) {
         launches.forEach { launch ->
             SpaceXInteractiveLaunchCard(
@@ -184,7 +187,7 @@ fun SpaceXInteractiveCardGrid(
                 onClick = { onLaunchClick(launch) },
                 onWatchClick = { onWatchClick(launch) },
                 enabled = enabled,
-                watchButtonContentDescription = watchButtonContentDescription
+                watchButtonContentDescription = watchButtonContentDescription,
             )
         }
     }
@@ -195,19 +198,20 @@ fun SpaceXInteractiveCardGrid(
 private fun SpaceXInteractiveLaunchCardPreview() {
     SpaceXTheme {
         SpaceXInteractiveLaunchCard(
-            launch = InteractiveLaunchData(
-                id = "1",
-                name = "FalconSat",
-                date = "Mar 24, 2006",
-                status = "Failed",
-                imageUrl = "https://images2.imgbox.com/94/f2/NN6z45OK_o.png"
-            ),
+            launch =
+                InteractiveLaunchData(
+                    id = "1",
+                    name = "FalconSat",
+                    date = "Mar 24, 2006",
+                    status = "Failed",
+                    imageUrl = "https://images2.imgbox.com/94/f2/NN6z45OK_o.png",
+                ),
             onClick = { },
             onWatchClick = { },
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
             watchButtonContentDescription = "Watch FalconSat launch",
             onClickLabel = "View launch details for FalconSat",
-            patchContentDescription = "FalconSat patch"
+            patchContentDescription = "FalconSat patch",
         )
     }
 }
@@ -217,20 +221,21 @@ private fun SpaceXInteractiveLaunchCardPreview() {
 private fun SpaceXInteractiveLaunchCardPressedPreview() {
     SpaceXTheme {
         SpaceXInteractiveLaunchCard(
-            launch = InteractiveLaunchData(
-                id = "2",
-                name = "DemoSat",
-                date = "Mar 21, 2007",
-                status = "Success",
-                imageUrl = null
-            ),
+            launch =
+                InteractiveLaunchData(
+                    id = "2",
+                    name = "DemoSat",
+                    date = "Mar 21, 2007",
+                    status = "Success",
+                    imageUrl = null,
+                ),
             onClick = { },
             onWatchClick = { },
             isPressed = true,
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
             watchButtonContentDescription = "Watch DemoSat launch",
             onClickLabel = "View launch details for DemoSat",
-            patchContentDescription = "DemoSat patch"
+            patchContentDescription = "DemoSat patch",
         )
     }
 }
@@ -240,33 +245,34 @@ private fun SpaceXInteractiveLaunchCardPressedPreview() {
 private fun SpaceXInteractiveCardGridPreview() {
     SpaceXTheme {
         SpaceXInteractiveCardGrid(
-            launches = listOf(
-                InteractiveLaunchData(
-                    id = "1",
-                    name = "FalconSat",
-                    date = "Mar 24, 2006",
-                    status = "Failed",
-                    imageUrl = "https://images2.imgbox.com/94/f2/NN6z45OK_o.png"
+            launches =
+                listOf(
+                    InteractiveLaunchData(
+                        id = "1",
+                        name = "FalconSat",
+                        date = "Mar 24, 2006",
+                        status = "Failed",
+                        imageUrl = "https://images2.imgbox.com/94/f2/NN6z45OK_o.png",
+                    ),
+                    InteractiveLaunchData(
+                        id = "2",
+                        name = "DemoSat",
+                        date = "Mar 21, 2007",
+                        status = "Success",
+                        imageUrl = null,
+                    ),
+                    InteractiveLaunchData(
+                        id = "3",
+                        name = "Trailblazer",
+                        date = "Aug 3, 2008",
+                        status = "Success",
+                        imageUrl = "https://images2.imgbox.com/3c/0e/T8iJcSN3_o.png",
+                    ),
                 ),
-                InteractiveLaunchData(
-                    id = "2",
-                    name = "DemoSat",
-                    date = "Mar 21, 2007",
-                    status = "Success",
-                    imageUrl = null
-                ),
-                InteractiveLaunchData(
-                    id = "3",
-                    name = "Trailblazer",
-                    date = "Aug 3, 2008",
-                    status = "Success",
-                    imageUrl = "https://images2.imgbox.com/3c/0e/T8iJcSN3_o.png"
-                )
-            ),
             onLaunchClick = { },
             onWatchClick = { },
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
-            watchButtonContentDescription = "Watch launch"
+            watchButtonContentDescription = "Watch launch",
         )
     }
 }
@@ -276,20 +282,21 @@ private fun SpaceXInteractiveCardGridPreview() {
 private fun SpaceXInteractiveLaunchCardDisabledPreview() {
     SpaceXTheme {
         SpaceXInteractiveLaunchCard(
-            launch = InteractiveLaunchData(
-                id = "4",
-                name = "RatSat",
-                date = "Sep 28, 2008",
-                status = "Success",
-                imageUrl = null
-            ),
+            launch =
+                InteractiveLaunchData(
+                    id = "4",
+                    name = "RatSat",
+                    date = "Sep 28, 2008",
+                    status = "Success",
+                    imageUrl = null,
+                ),
             onClick = { },
             onWatchClick = { },
             enabled = false,
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
             watchButtonContentDescription = "Watch RatSat launch",
             onClickLabel = "View launch details for RatSat",
-            patchContentDescription = "RatSat patch"
+            patchContentDescription = "RatSat patch",
         )
     }
 }

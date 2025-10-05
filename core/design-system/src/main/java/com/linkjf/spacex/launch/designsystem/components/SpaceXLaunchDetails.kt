@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,11 +20,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.linkjf.spacex.launch.design_system.R
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTypography
+import com.linkjf.spacex.launch.designsystem.R
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
 
 data class LaunchDetailsData(
     val id: String,
@@ -36,14 +36,14 @@ data class LaunchDetailsData(
     val details: String?,
     val patchImageUrl: String?,
     val webcastUrl: String?,
-    val status: LaunchStatus
+    val status: LaunchStatus,
 )
 
 enum class LaunchStatus {
     SCHEDULED,
     LAUNCHED,
     FAILED,
-    CANCELLED
+    CANCELLED,
 }
 
 @Composable
@@ -53,10 +53,11 @@ fun SpaceXLaunchDetails(
     backgroundColor: Color = SpaceXColors.CardBackground,
     textColor: Color = SpaceXColors.OnSurface,
     dividerColor: Color = SpaceXColors.Divider,
-    patchContentDescription: String = stringResource(
-        R.string.launch_details_patch_description,
-        launch.name
-    ),
+    patchContentDescription: String =
+        stringResource(
+            R.string.launch_details_patch_description,
+            launch.name,
+        ),
     rocketLabel: String = stringResource(R.string.launch_details_rocket),
     launchpadLabel: String = stringResource(R.string.launch_details_launchpad),
     missionTypeLabel: String = stringResource(R.string.launch_details_mission_type),
@@ -64,38 +65,39 @@ fun SpaceXLaunchDetails(
     scheduledText: String = stringResource(R.string.launch_status_scheduled),
     launchedText: String = stringResource(R.string.launch_status_launched),
     failedText: String = stringResource(R.string.launch_status_failed),
-    cancelledText: String = stringResource(R.string.launch_status_cancelled)
+    cancelledText: String = stringResource(R.string.launch_status_cancelled),
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
-        ),
-        shape = RoundedCornerShape(SpaceXSpacing.BorderRadiusMedium)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = backgroundColor,
+            ),
+        shape = RoundedCornerShape(SpaceXSpacing.BorderRadiusMedium),
     ) {
         Column(
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.Top,
             ) {
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small)
+                    verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
                 ) {
                     Text(
                         text = launch.name,
                         style = SpaceXTypography.Typography.headlineLarge,
                         color = textColor,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
 
                     Text(
                         text = launch.dateUtc,
                         style = SpaceXTypography.Typography.titleLarge,
-                        color = textColor.copy(alpha = SpaceXSpacing.LaunchDetailsDateAlpha)
+                        color = textColor.copy(alpha = SpaceXSpacing.LaunchDetailsDateAlpha),
                     )
 
                     SpaceXLaunchStatus(
@@ -104,14 +106,14 @@ fun SpaceXLaunchDetails(
                         scheduledText = scheduledText,
                         launchedText = launchedText,
                         failedText = failedText,
-                        cancelledText = cancelledText
+                        cancelledText = cancelledText,
                     )
                 }
 
                 SpaceXLaunchImage(
                     imageUrl = launch.patchImageUrl,
                     contentDescription = patchContentDescription,
-                    modifier = Modifier.size(SpaceXSpacing.LaunchDetailsImageSize)
+                    modifier = Modifier.size(SpaceXSpacing.LaunchDetailsImageSize),
                 )
             }
 
@@ -119,30 +121,30 @@ fun SpaceXLaunchDetails(
 
             HorizontalDivider(
                 color = dividerColor,
-                thickness = SpaceXSpacing.DividerThickness
+                thickness = SpaceXSpacing.DividerThickness,
             )
 
             Spacer(modifier = Modifier.height(SpaceXSpacing.Medium))
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small2)
+                verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small2),
             ) {
                 SpaceXDetailRow(
                     label = rocketLabel,
                     value = launch.rocketName,
-                    textColor = textColor
+                    textColor = textColor,
                 )
 
                 SpaceXDetailRow(
                     label = launchpadLabel,
                     value = launch.launchpadName,
-                    textColor = textColor
+                    textColor = textColor,
                 )
 
                 SpaceXDetailRow(
                     label = missionTypeLabel,
                     value = launch.missionType,
-                    textColor = textColor
+                    textColor = textColor,
                 )
 
                 launch.details?.let { details ->
@@ -150,7 +152,7 @@ fun SpaceXLaunchDetails(
                         label = detailsLabel,
                         value = details,
                         textColor = textColor,
-                        isMultiline = true
+                        isMultiline = true,
                     )
                 }
             }
@@ -164,44 +166,44 @@ fun SpaceXDetailRow(
     value: String,
     modifier: Modifier = Modifier,
     textColor: Color = SpaceXColors.OnSurface,
-    isMultiline: Boolean = false
+    isMultiline: Boolean = false,
 ) {
     if (isMultiline) {
         Column(
             modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Micro)
-        ) {
-            Text(
-                text = label,
-                style = SpaceXTypography.Typography.labelLarge,
-                color = SpaceXColors.OnSurfaceVariant,
-                fontWeight = FontWeight.Medium
-            )
-            Text(
-                text = value,
-                style = SpaceXTypography.Typography.bodyLarge,
-                color = textColor
-            )
-        }
-    } else {
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Micro),
         ) {
             Text(
                 text = label,
                 style = SpaceXTypography.Typography.labelLarge,
                 color = SpaceXColors.OnSurfaceVariant,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = value,
+                style = SpaceXTypography.Typography.bodyLarge,
+                color = textColor,
+            )
+        }
+    } else {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = label,
+                style = SpaceXTypography.Typography.labelLarge,
+                color = SpaceXColors.OnSurfaceVariant,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.weight(1f),
             )
 
             Text(
                 text = value,
                 style = SpaceXTypography.Typography.bodyLarge,
                 color = textColor,
-                modifier = Modifier.weight(2f)
+                modifier = Modifier.weight(2f),
             )
         }
     }
@@ -215,21 +217,22 @@ fun SpaceXLaunchStatus(
     scheduledText: String = stringResource(R.string.launch_status_scheduled),
     launchedText: String = stringResource(R.string.launch_status_launched),
     failedText: String = stringResource(R.string.launch_status_failed),
-    cancelledText: String = stringResource(R.string.launch_status_cancelled)
+    cancelledText: String = stringResource(R.string.launch_status_cancelled),
 ) {
-    val (statusText, statusColor) = when (status) {
-        LaunchStatus.SCHEDULED -> scheduledText to SpaceXColors.Primary
-        LaunchStatus.LAUNCHED -> launchedText to SpaceXColors.Success
-        LaunchStatus.FAILED -> failedText to SpaceXColors.Error
-        LaunchStatus.CANCELLED -> cancelledText to SpaceXColors.OnSurfaceVariant
-    }
+    val (statusText, statusColor) =
+        when (status) {
+            LaunchStatus.SCHEDULED -> scheduledText to SpaceXColors.Primary
+            LaunchStatus.LAUNCHED -> launchedText to SpaceXColors.Success
+            LaunchStatus.FAILED -> failedText to SpaceXColors.Error
+            LaunchStatus.CANCELLED -> cancelledText to SpaceXColors.OnSurfaceVariant
+        }
 
     Text(
         text = statusText,
         style = SpaceXTypography.Typography.labelLarge,
         color = statusColor,
         fontWeight = FontWeight.SemiBold,
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -238,18 +241,21 @@ fun SpaceXLaunchStatus(
 private fun SpaceXLaunchDetailsPreview() {
     SpaceXTheme {
         SpaceXLaunchDetails(
-            launch = LaunchDetailsData(
-                id = "launch_1",
-                name = "Starlink Group 2-38",
-                dateUtc = "Oct 4, 2025 at 10:00 UTC",
-                rocketName = "Falcon 9",
-                launchpadName = "Space Launch Complex 40",
-                missionType = "Commercial",
-                details = "A batch of Starlink satellites for global internet coverage. This mission will deploy satellites into low Earth orbit to expand SpaceX's satellite constellation.",
-                patchImageUrl = "https://images2.imgbox.com/94/f2/NN6z45OK_o.png",
-                webcastUrl = "https://youtube.com/watch?v=example",
-                status = LaunchStatus.SCHEDULED
-            ),
+            launch =
+                LaunchDetailsData(
+                    id = "launch_1",
+                    name = "Starlink Group 2-38",
+                    dateUtc = "Oct 4, 2025 at 10:00 UTC",
+                    rocketName = "Falcon 9",
+                    launchpadName = "Space Launch Complex 40",
+                    missionType = "Commercial",
+                    details =
+                        "A batch of Starlink satellites for global internet coverage." +
+                            " This mission will deploy satellites into low Earth orbit to expand SpaceX's satellite constellation.",
+                    patchImageUrl = "https://images2.imgbox.com/94/f2/NN6z45OK_o.png",
+                    webcastUrl = "https://youtube.com/watch?v=example",
+                    status = LaunchStatus.SCHEDULED,
+                ),
             modifier = Modifier.padding(SpaceXSpacing.CardMargin),
             patchContentDescription = "Starlink Group 2-38 mission patch",
             rocketLabel = "Rocket",
@@ -259,7 +265,7 @@ private fun SpaceXLaunchDetailsPreview() {
             scheduledText = "Scheduled",
             launchedText = "Launched",
             failedText = "Failed",
-            cancelledText = "Cancelled"
+            cancelledText = "Cancelled",
         )
     }
 }
@@ -269,18 +275,19 @@ private fun SpaceXLaunchDetailsPreview() {
 private fun SpaceXLaunchDetailsFailedPreview() {
     SpaceXTheme {
         SpaceXLaunchDetails(
-            launch = LaunchDetailsData(
-                id = "launch_2",
-                name = "Falcon Heavy Demo",
-                dateUtc = "Feb 6, 2018 at 20:45 UTC",
-                rocketName = "Falcon Heavy",
-                launchpadName = "Kennedy Space Center LC-39A",
-                missionType = "Test Flight",
-                details = "First test flight of the Falcon Heavy rocket carrying a Tesla Roadster as payload.",
-                patchImageUrl = null,
-                webcastUrl = null,
-                status = LaunchStatus.LAUNCHED
-            ),
+            launch =
+                LaunchDetailsData(
+                    id = "launch_2",
+                    name = "Falcon Heavy Demo",
+                    dateUtc = "Feb 6, 2018 at 20:45 UTC",
+                    rocketName = "Falcon Heavy",
+                    launchpadName = "Kennedy Space Center LC-39A",
+                    missionType = "Test Flight",
+                    details = "First test flight of the Falcon Heavy rocket carrying a Tesla Roadster as payload.",
+                    patchImageUrl = null,
+                    webcastUrl = null,
+                    status = LaunchStatus.LAUNCHED,
+                ),
             modifier = Modifier.padding(SpaceXSpacing.CardMargin),
             patchContentDescription = "Falcon Heavy Demo mission patch",
             rocketLabel = "Rocket",
@@ -290,7 +297,7 @@ private fun SpaceXLaunchDetailsFailedPreview() {
             scheduledText = "Scheduled",
             launchedText = "Launched",
             failedText = "Failed",
-            cancelledText = "Cancelled"
+            cancelledText = "Cancelled",
         )
     }
 }
@@ -301,31 +308,33 @@ private fun SpaceXDetailRowPreview() {
     SpaceXTheme {
         Column(
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
-            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small2)
+            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small2),
         ) {
             SpaceXDetailRow(
                 label = "Rocket",
                 value = "Falcon 9",
-                textColor = SpaceXColors.OnSurface
+                textColor = SpaceXColors.OnSurface,
             )
 
             SpaceXDetailRow(
                 label = "Launchpad",
                 value = "Space Launch Complex 40",
-                textColor = SpaceXColors.OnSurface
+                textColor = SpaceXColors.OnSurface,
             )
 
             SpaceXDetailRow(
                 label = "Mission Type",
                 value = "Commercial",
-                textColor = SpaceXColors.OnSurface
+                textColor = SpaceXColors.OnSurface,
             )
 
             SpaceXDetailRow(
                 label = "Details",
-                value = "A batch of Starlink satellites for global internet coverage. This mission will deploy satellites into low Earth orbit.",
+                value =
+                    "A batch of Starlink satellites for global internet coverage." +
+                        " This mission will deploy satellites into low Earth orbit.",
                 textColor = SpaceXColors.OnSurface,
-                isMultiline = true
+                isMultiline = true,
             )
         }
     }
@@ -337,7 +346,7 @@ private fun SpaceXLaunchStatusPreview() {
     SpaceXTheme {
         Column(
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
-            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small2)
+            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small2),
         ) {
             SpaceXLaunchStatus(
                 status = LaunchStatus.SCHEDULED,
@@ -345,7 +354,7 @@ private fun SpaceXLaunchStatusPreview() {
                 scheduledText = "Scheduled",
                 launchedText = "Launched",
                 failedText = "Failed",
-                cancelledText = "Cancelled"
+                cancelledText = "Cancelled",
             )
 
             SpaceXLaunchStatus(
@@ -354,7 +363,7 @@ private fun SpaceXLaunchStatusPreview() {
                 scheduledText = "Scheduled",
                 launchedText = "Launched",
                 failedText = "Failed",
-                cancelledText = "Cancelled"
+                cancelledText = "Cancelled",
             )
 
             SpaceXLaunchStatus(
@@ -363,7 +372,7 @@ private fun SpaceXLaunchStatusPreview() {
                 scheduledText = "Scheduled",
                 launchedText = "Launched",
                 failedText = "Failed",
-                cancelledText = "Cancelled"
+                cancelledText = "Cancelled",
             )
 
             SpaceXLaunchStatus(
@@ -372,7 +381,7 @@ private fun SpaceXLaunchStatusPreview() {
                 scheduledText = "Scheduled",
                 launchedText = "Launched",
                 failedText = "Failed",
-                cancelledText = "Cancelled"
+                cancelledText = "Cancelled",
             )
         }
     }

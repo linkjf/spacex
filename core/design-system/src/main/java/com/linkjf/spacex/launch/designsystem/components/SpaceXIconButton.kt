@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -12,11 +12,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import com.linkjf.spacex.launch.design_system.R
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXIcons
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.R
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXIcons
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
 
 @Composable
 fun SpaceXIconButton(
@@ -28,22 +28,23 @@ fun SpaceXIconButton(
     backgroundColor: Color = Color.Transparent,
     iconSize: Dp = SpaceXSpacing.IconSmall,
     buttonSize: Dp = SpaceXSpacing.TouchTarget,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     IconButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier.size(buttonSize),
-        colors = IconButtonDefaults.iconButtonColors(
-            containerColor = backgroundColor,
-            contentColor = iconColor
-        )
+        colors =
+            IconButtonDefaults.iconButtonColors(
+                containerColor = backgroundColor,
+                contentColor = iconColor,
+            ),
     ) {
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
             tint = iconColor,
-            modifier = Modifier.size(iconSize)
+            modifier = Modifier.size(iconSize),
         )
     }
 }
@@ -58,22 +59,23 @@ fun SpaceXIconButtonWithRipple(
     backgroundColor: Color = Color.Transparent,
     iconSize: Dp = SpaceXSpacing.IconSmall,
     buttonSize: Dp = SpaceXSpacing.TouchTarget,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     IconButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier.size(buttonSize),
-        colors = IconButtonDefaults.iconButtonColors(
-            containerColor = backgroundColor,
-            contentColor = iconColor
-        )
+        colors =
+            IconButtonDefaults.iconButtonColors(
+                containerColor = backgroundColor,
+                contentColor = iconColor,
+            ),
     ) {
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
             tint = iconColor,
-            modifier = Modifier.size(iconSize)
+            modifier = Modifier.size(iconSize),
         )
     }
 }
@@ -85,7 +87,7 @@ fun SpaceXSearchButton(
     iconColor: Color = SpaceXColors.OnBackground,
     backgroundColor: Color = Color.Transparent,
     enabled: Boolean = true,
-    contentDescription: String = stringResource(R.string.content_description_search)
+    contentDescription: String = stringResource(R.string.content_description_search),
 ) {
     SpaceXIconButton(
         onClick = onClick,
@@ -96,7 +98,7 @@ fun SpaceXSearchButton(
         backgroundColor = backgroundColor,
         iconSize = SpaceXSpacing.IconSmall,
         buttonSize = SpaceXSpacing.IconMedium,
-        enabled = enabled
+        enabled = enabled,
     )
 }
 
@@ -107,7 +109,7 @@ fun SpaceXPlayButton(
     iconColor: Color = SpaceXColors.OnSurface,
     backgroundColor: Color = Color.Transparent,
     enabled: Boolean = true,
-    contentDescription: String = stringResource(R.string.content_description_watch)
+    contentDescription: String = stringResource(R.string.content_description_watch),
 ) {
     SpaceXIconButton(
         onClick = onClick,
@@ -118,7 +120,7 @@ fun SpaceXPlayButton(
         backgroundColor = backgroundColor,
         iconSize = SpaceXSpacing.IconSmall,
         buttonSize = SpaceXSpacing.IconSmall,
-        enabled = enabled
+        enabled = enabled,
     )
 }
 
@@ -130,7 +132,7 @@ private fun SpaceXIconButtonPreview() {
             onClick = { },
             icon = SpaceXIcons.Search,
             contentDescription = "Search",
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         )
     }
 }
@@ -144,7 +146,7 @@ private fun SpaceXIconButtonWithRipplePreview() {
             icon = SpaceXIcons.PlayCircle,
             contentDescription = "Play",
             backgroundColor = SpaceXColors.Primary.copy(alpha = 0.1f),
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         )
     }
 }
@@ -156,7 +158,7 @@ private fun SpaceXSearchButtonPreview() {
         SpaceXSearchButton(
             onClick = { },
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
-            contentDescription = "Search launches"
+            contentDescription = "Search launches",
         )
     }
 }
@@ -168,7 +170,7 @@ private fun SpaceXPlayButtonPreview() {
         SpaceXPlayButton(
             onClick = { },
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
-            contentDescription = "Watch launch"
+            contentDescription = "Watch launch",
         )
     }
 }
@@ -185,7 +187,7 @@ private fun SpaceXIconButtonCustomPreview() {
             backgroundColor = SpaceXColors.SurfaceVariant,
             iconSize = SpaceXSpacing.IconMedium,
             buttonSize = SpaceXSpacing.TouchTarget,
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         )
     }
 }
@@ -200,7 +202,7 @@ private fun SpaceXIconButtonDisabledPreview() {
             contentDescription = "Search",
             iconColor = SpaceXColors.InteractiveDisabled,
             enabled = false,
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         )
     }
 }

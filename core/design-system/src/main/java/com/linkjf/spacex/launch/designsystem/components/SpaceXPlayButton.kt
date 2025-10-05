@@ -1,9 +1,8 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -15,13 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.linkjf.spacex.launch.design_system.R
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXIcons
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTypography
+import com.linkjf.spacex.launch.designsystem.R
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXIcons
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
 
 @Composable
 fun SpaceXPlayButtonWithText(
@@ -30,29 +28,29 @@ fun SpaceXPlayButtonWithText(
     iconColor: Color = SpaceXColors.OnSurface,
     textColor: Color = SpaceXColors.OnSurface,
     watchText: String = stringResource(R.string.play_button_watch_text),
-    contentDescription: String = stringResource(R.string.play_button_watch_content_description)
+    contentDescription: String = stringResource(R.string.play_button_watch_content_description),
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small)
+        horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
     ) {
         IconButton(
             onClick = onClick,
-            modifier = Modifier.size(SpaceXSpacing.IconSmall)
+            modifier = Modifier.size(SpaceXSpacing.IconSmall),
         ) {
             Icon(
                 imageVector = SpaceXIcons.PlayCircle,
                 contentDescription = contentDescription,
                 tint = iconColor,
-                modifier = Modifier.size(SpaceXSpacing.IconSmall)
+                modifier = Modifier.size(SpaceXSpacing.IconSmall),
             )
         }
-        
+
         Text(
             text = watchText,
             style = SpaceXTypography.Typography.titleLarge,
-            color = textColor
+            color = textColor,
         )
     }
 }
@@ -64,29 +62,29 @@ fun SpaceXPlayButtonVerticalWithText(
     iconColor: Color = SpaceXColors.OnSurface,
     textColor: Color = SpaceXColors.OnSurface,
     watchText: String = stringResource(R.string.play_button_watch_text),
-    contentDescription: String = stringResource(R.string.play_button_watch_content_description)
+    contentDescription: String = stringResource(R.string.play_button_watch_content_description),
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small)
+        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
     ) {
         IconButton(
             onClick = onClick,
-            modifier = Modifier.size(SpaceXSpacing.IconMedium)
+            modifier = Modifier.size(SpaceXSpacing.IconMedium),
         ) {
             Icon(
                 imageVector = SpaceXIcons.PlayCircle,
                 contentDescription = contentDescription,
                 tint = iconColor,
-                modifier = Modifier.size(SpaceXSpacing.IconSmall)
+                modifier = Modifier.size(SpaceXSpacing.IconSmall),
             )
         }
-        
+
         Text(
             text = watchText,
             style = SpaceXTypography.Typography.titleLarge,
-            color = textColor
+            color = textColor,
         )
     }
 }
@@ -99,7 +97,7 @@ private fun SpaceXPlayButtonWithTextPreview() {
             onClick = { },
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
             watchText = "Watch",
-            contentDescription = "Watch launch"
+            contentDescription = "Watch launch",
         )
     }
 }
@@ -112,7 +110,7 @@ private fun SpaceXPlayButtonVerticalWithTextPreview() {
             onClick = { },
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
             watchText = "Watch",
-            contentDescription = "Watch launch"
+            contentDescription = "Watch launch",
         )
     }
 }
@@ -127,7 +125,7 @@ private fun SpaceXPlayButtonWithTextCustomColorsPreview() {
             textColor = SpaceXColors.Primary,
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
             watchText = "Watch",
-            contentDescription = "Watch launch"
+            contentDescription = "Watch launch",
         )
     }
 }

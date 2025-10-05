@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,20 +8,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
 
 @Composable
 fun SpaceXDivider(
     modifier: Modifier = Modifier,
     color: Color = SpaceXColors.Divider,
-    thickness: Float = SpaceXSpacing.DividerThicknessDefault
+    thickness: Float = SpaceXSpacing.DividerThicknessDefault,
 ) {
     HorizontalDivider(
         modifier = modifier.fillMaxWidth(),
         thickness = thickness.dp,
-        color = color
+        color = color,
     )
 }
 
@@ -30,7 +30,7 @@ fun SpaceXDivider(
 private fun SpaceXDividerPreview() {
     SpaceXTheme {
         SpaceXDivider(
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         )
     }
 }
@@ -42,7 +42,7 @@ private fun SpaceXDividerCustomPreview() {
         SpaceXDivider(
             color = SpaceXColors.Primary,
             thickness = 2f,
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
 
 @Composable
 fun SpaceXLaunchesLayout(
@@ -17,21 +17,21 @@ fun SpaceXLaunchesLayout(
     onSearchClick: () -> Unit,
     onTabSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit = {}
+    content: @Composable () -> Unit = {},
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium)
+        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium),
     ) {
         SpaceXScreenHeader(
             title = title,
-            onSearchClick = onSearchClick
+            onSearchClick = onSearchClick,
         )
 
         SpaceXTabSelector(
             tabs = tabs,
             selectedIndex = selectedTabIndex,
-            onTabSelected = onTabSelected
+            onTabSelected = onTabSelected,
         )
 
         content()
@@ -47,7 +47,7 @@ private fun SpaceXLaunchesLayoutPreview() {
             tabs = listOf("Upcoming", "Pack"),
             selectedTabIndex = 0,
             onSearchClick = { },
-            onTabSelected = { }
+            onTabSelected = { },
         )
     }
 }
@@ -61,7 +61,7 @@ private fun SpaceXLaunchesLayoutSecondTabPreview() {
             tabs = listOf("Upcoming", "Pack"),
             selectedTabIndex = 1,
             onSearchClick = { },
-            onTabSelected = { }
+            onTabSelected = { },
         )
     }
 }

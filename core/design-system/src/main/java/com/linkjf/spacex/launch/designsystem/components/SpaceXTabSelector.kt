@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTypography
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
 
 @Composable
 fun SpaceXTabSelector(
@@ -29,34 +29,35 @@ fun SpaceXTabSelector(
     activeTabColor: Color = SpaceXColors.TabActiveBackground,
     inactiveTabColor: Color = SpaceXColors.TabBackground,
     activeTextColor: Color = SpaceXColors.TabActiveText,
-    inactiveTextColor: Color = SpaceXColors.TabInactiveText
+    inactiveTextColor: Color = SpaceXColors.TabInactiveText,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = SpaceXSpacing.HeaderPadding),
-        horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.TabMargin)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(horizontal = SpaceXSpacing.HeaderPadding),
+        horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.TabMargin),
     ) {
         tabs.forEachIndexed { index, tab ->
             val isSelected = index == selectedIndex
 
             Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusLarge))
-                    .background(
-                        color = if (isSelected) activeTabColor else inactiveTabColor
-                    )
-                    .clickable { onTabSelected(index) }
-                    .padding(
-                        horizontal = SpaceXSpacing.TabPadding,
-                        vertical = SpaceXSpacing.Small2
-                    ),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusLarge))
+                        .background(
+                            color = if (isSelected) activeTabColor else inactiveTabColor,
+                        ).clickable { onTabSelected(index) }
+                        .padding(
+                            horizontal = SpaceXSpacing.TabPadding,
+                            vertical = SpaceXSpacing.Small2,
+                        ),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = tab,
                     style = SpaceXTypography.Typography.labelLarge,
-                    color = if (isSelected) activeTextColor else inactiveTextColor
+                    color = if (isSelected) activeTextColor else inactiveTextColor,
                 )
             }
         }
@@ -70,7 +71,7 @@ private fun SpaceXTabSelectorPreview() {
         SpaceXTabSelector(
             tabs = listOf("Upcoming", "Pack"),
             selectedIndex = 0,
-            onTabSelected = { }
+            onTabSelected = { },
         )
     }
 }
@@ -82,7 +83,7 @@ private fun SpaceXTabSelectorSecondSelectedPreview() {
         SpaceXTabSelector(
             tabs = listOf("Upcoming", "Pack"),
             selectedIndex = 1,
-            onTabSelected = { }
+            onTabSelected = { },
         )
     }
 }
@@ -94,7 +95,7 @@ private fun SpaceXTabSelectorThreeTabsPreview() {
         SpaceXTabSelector(
             tabs = listOf("Upcoming", "Pack", "History"),
             selectedIndex = 1,
-            onTabSelected = { }
+            onTabSelected = { },
         )
     }
 }

@@ -1,15 +1,16 @@
 package com.linkjf.spacex.launch.tools.time
 
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import org.junit.Test
-import org.junit.Assert.*
 import java.time.Instant
 
 class TimeExtensionsTest {
-
     @Test
     fun `calculateTimeRemaining should return correct time for future launch`() {
         val currentTime = Instant.parse("2024-01-01T10:00:00Z")
-        val launchTime = Instant.parse("2024-01-03T15:30:45Z") // 2 days, 5 hours, 30 minutes, 45 seconds later
+        val launchTime =
+            Instant.parse("2024-01-03T15:30:45Z") // 2 days, 5 hours, 30 minutes, 45 seconds later
 
         val result = calculateTimeRemaining(launchTime, currentTime)
 
@@ -54,7 +55,10 @@ class TimeExtensionsTest {
 
     @Test
     fun `getCountdownStatus should return correct status for all scenarios`() {
-        assertEquals(CountdownStatus.COUNTING, getCountdownStatus(TimeRemaining(2, 5, 30, 45), false))
+        assertEquals(
+            CountdownStatus.COUNTING,
+            getCountdownStatus(TimeRemaining(2, 5, 30, 45), false),
+        )
         assertEquals(CountdownStatus.LIVE, getCountdownStatus(TimeRemaining(2, 5, 30, 45), true))
         assertEquals(CountdownStatus.LAUNCHED, getCountdownStatus(TimeRemaining(0, 0, 0, 0), false))
         assertEquals(CountdownStatus.OVERDUE, getCountdownStatus(TimeRemaining(-1, 0, 0, 0), false))

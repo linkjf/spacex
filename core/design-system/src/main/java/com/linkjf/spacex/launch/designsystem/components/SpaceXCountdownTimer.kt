@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,11 +28,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.linkjf.spacex.launch.design_system.R
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTypography
+import com.linkjf.spacex.launch.designsystem.R
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
 import com.linkjf.spacex.launch.tools.time.CountdownStatus
 import com.linkjf.spacex.launch.tools.time.TimeRemaining
 import com.linkjf.spacex.launch.tools.time.calculateLaunchProgress
@@ -46,7 +46,7 @@ import java.time.Instant
 data class CountdownData(
     val launchInstant: Instant,
     val launchName: String,
-    val isLive: Boolean = false
+    val isLive: Boolean = false,
 )
 
 @Composable
@@ -67,7 +67,7 @@ fun SpaceXCountdownTimer(
     daysText: String = stringResource(R.string.time_unit_days),
     hoursText: String = stringResource(R.string.time_unit_hours),
     minutesText: String = stringResource(R.string.time_unit_minutes),
-    secondsText: String = stringResource(R.string.time_unit_seconds)
+    secondsText: String = stringResource(R.string.time_unit_seconds),
 ) {
     var currentTime by remember { mutableStateOf(Instant.now()) }
 
@@ -77,24 +77,25 @@ fun SpaceXCountdownTimer(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
-        ),
-        shape = RoundedCornerShape(SpaceXSpacing.BorderRadiusMedium)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = backgroundColor,
+            ),
+        shape = RoundedCornerShape(SpaceXSpacing.BorderRadiusMedium),
     ) {
         Column(
-            modifier = Modifier.padding(SpaceXSpacing.CardPadding)
+            modifier = Modifier.padding(SpaceXSpacing.CardPadding),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = countdownToLaunchText,
                     style = SpaceXTypography.Typography.titleLarge,
                     color = textColor,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
 
                 SpaceXCountdownStatus(
@@ -105,7 +106,7 @@ fun SpaceXCountdownTimer(
                     countingText = countingText,
                     liveText = liveText,
                     launchedText = launchedText,
-                    overdueText = overdueText
+                    overdueText = overdueText,
                 )
             }
 
@@ -113,7 +114,7 @@ fun SpaceXCountdownTimer(
 
             HorizontalDivider(
                 color = dividerColor,
-                thickness = SpaceXSpacing.DividerThickness
+                thickness = SpaceXSpacing.DividerThickness,
             )
 
             Spacer(modifier = Modifier.height(SpaceXSpacing.Medium))
@@ -122,7 +123,7 @@ fun SpaceXCountdownTimer(
                 text = countdown.launchName,
                 style = SpaceXTypography.Typography.headlineSmall,
                 color = textColor,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
 
             Spacer(modifier = Modifier.height(SpaceXSpacing.Small))
@@ -130,7 +131,7 @@ fun SpaceXCountdownTimer(
             Text(
                 text = countdown.launchInstant.formatToUtcString(),
                 style = SpaceXTypography.Typography.bodyLarge,
-                color = SpaceXColors.OnSurfaceVariant
+                color = SpaceXColors.OnSurfaceVariant,
             )
 
             Spacer(modifier = Modifier.height(SpaceXSpacing.Medium))
@@ -144,35 +145,35 @@ fun SpaceXCountdownTimer(
                         daysText = daysText,
                         hoursText = hoursText,
                         minutesText = minutesText,
-                        secondsText = secondsText
+                        secondsText = secondsText,
                     )
 
                     Spacer(modifier = Modifier.height(SpaceXSpacing.Medium))
 
                     SpaceXCountdownProgress(
                         progress = progress,
-                        primaryColor = primaryColor
+                        primaryColor = primaryColor,
                     )
                 }
 
                 CountdownStatus.LIVE -> {
                     SpaceXLiveIndicator(
                         textColor = textColor,
-                        successColor = successColor
+                        successColor = successColor,
                     )
                 }
 
                 CountdownStatus.LAUNCHED -> {
                     SpaceXLaunchedIndicator(
                         textColor = textColor,
-                        successColor = successColor
+                        successColor = successColor,
                     )
                 }
 
                 CountdownStatus.OVERDUE -> {
                     SpaceXOverdueIndicator(
                         textColor = textColor,
-                        errorColor = errorColor
+                        errorColor = errorColor,
                     )
                 }
             }
@@ -189,38 +190,38 @@ fun SpaceXCountdownDisplay(
     daysText: String = stringResource(R.string.time_unit_days),
     hoursText: String = stringResource(R.string.time_unit_hours),
     minutesText: String = stringResource(R.string.time_unit_minutes),
-    secondsText: String = stringResource(R.string.time_unit_seconds)
+    secondsText: String = stringResource(R.string.time_unit_seconds),
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         SpaceXTimeUnit(
             value = timeRemaining.days,
             unit = daysText,
             textColor = textColor,
-            primaryColor = primaryColor
+            primaryColor = primaryColor,
         )
 
         SpaceXTimeUnit(
             value = timeRemaining.hours,
             unit = hoursText,
             textColor = textColor,
-            primaryColor = primaryColor
+            primaryColor = primaryColor,
         )
 
         SpaceXTimeUnit(
             value = timeRemaining.minutes,
             unit = minutesText,
             textColor = textColor,
-            primaryColor = primaryColor
+            primaryColor = primaryColor,
         )
 
         SpaceXTimeUnit(
             value = timeRemaining.seconds,
             unit = secondsText,
             textColor = textColor,
-            primaryColor = primaryColor
+            primaryColor = primaryColor,
         )
     }
 }
@@ -231,25 +232,26 @@ fun SpaceXTimeUnit(
     unit: String,
     modifier: Modifier = Modifier,
     textColor: Color = SpaceXColors.OnSurface,
-    primaryColor: Color = SpaceXColors.Primary
+    primaryColor: Color = SpaceXColors.Primary,
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small)
+        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
     ) {
         Box(
-            modifier = Modifier
-                .size(SpaceXSpacing.TimeUnitBox)
-                .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusSmall))
-                .padding(SpaceXSpacing.Small),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(SpaceXSpacing.TimeUnitBox)
+                    .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusSmall))
+                    .padding(SpaceXSpacing.Small),
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = value.toString().padStart(2, '0'),
                 style = SpaceXTypography.Typography.headlineLarge,
                 color = primaryColor,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         }
 
@@ -257,7 +259,7 @@ fun SpaceXTimeUnit(
             text = unit,
             style = SpaceXTypography.Typography.labelMedium,
             color = textColor,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
     }
 }
@@ -266,18 +268,18 @@ fun SpaceXTimeUnit(
 fun SpaceXCountdownProgress(
     progress: Float,
     modifier: Modifier = Modifier,
-    primaryColor: Color = SpaceXColors.Primary
+    primaryColor: Color = SpaceXColors.Primary,
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small)
+        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
     ) {
         Text(
             text = "Launch Progress",
             style = SpaceXTypography.Typography.labelLarge,
             color = SpaceXColors.OnSurfaceVariant,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
 
         CircularProgressIndicator(
@@ -293,7 +295,7 @@ fun SpaceXCountdownProgress(
             text = "${(progress * 100).toInt()}%",
             style = SpaceXTypography.Typography.titleMedium,
             color = primaryColor,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
     }
 }
@@ -308,21 +310,22 @@ fun SpaceXCountdownStatus(
     countingText: String = stringResource(R.string.status_counting),
     liveText: String = stringResource(R.string.status_live),
     launchedText: String = stringResource(R.string.status_launched),
-    overdueText: String = stringResource(R.string.status_overdue)
+    overdueText: String = stringResource(R.string.status_overdue),
 ) {
-    val (text, color) = when (status) {
-        CountdownStatus.COUNTING -> countingText to primaryColor
-        CountdownStatus.LIVE -> liveText to successColor
-        CountdownStatus.LAUNCHED -> launchedText to successColor
-        CountdownStatus.OVERDUE -> overdueText to errorColor
-    }
+    val (text, color) =
+        when (status) {
+            CountdownStatus.COUNTING -> countingText to primaryColor
+            CountdownStatus.LIVE -> liveText to successColor
+            CountdownStatus.LAUNCHED -> launchedText to successColor
+            CountdownStatus.OVERDUE -> overdueText to errorColor
+        }
 
     Text(
         text = text,
         style = SpaceXTypography.Typography.labelLarge,
         color = color,
         fontWeight = FontWeight.Bold,
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -332,27 +335,27 @@ fun SpaceXStatusIndicator(
     secondaryText: String,
     modifier: Modifier = Modifier,
     textColor: Color = SpaceXColors.OnSurface,
-    primaryTextColor: Color = SpaceXColors.Success
+    primaryTextColor: Color = SpaceXColors.Success,
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium)
+            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium),
         ) {
             Text(
                 text = primaryText,
                 style = SpaceXTypography.Typography.headlineLarge,
                 color = primaryTextColor,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             Text(
                 text = secondaryText,
                 style = SpaceXTypography.Typography.titleMedium,
-                color = textColor
+                color = textColor,
             )
         }
     }
@@ -362,14 +365,14 @@ fun SpaceXStatusIndicator(
 fun SpaceXLiveIndicator(
     modifier: Modifier = Modifier,
     textColor: Color = SpaceXColors.OnSurface,
-    successColor: Color = SpaceXColors.Success
+    successColor: Color = SpaceXColors.Success,
 ) {
     SpaceXStatusIndicator(
         primaryText = stringResource(R.string.live_indicator),
         secondaryText = stringResource(R.string.launch_in_progress),
         modifier = modifier,
         textColor = textColor,
-        primaryTextColor = successColor
+        primaryTextColor = successColor,
     )
 }
 
@@ -377,14 +380,14 @@ fun SpaceXLiveIndicator(
 fun SpaceXLaunchedIndicator(
     modifier: Modifier = Modifier,
     textColor: Color = SpaceXColors.OnSurface,
-    successColor: Color = SpaceXColors.Success
+    successColor: Color = SpaceXColors.Success,
 ) {
     SpaceXStatusIndicator(
         primaryText = stringResource(R.string.launched_indicator),
         secondaryText = stringResource(R.string.mission_successfully_launched),
         modifier = modifier,
         textColor = textColor,
-        primaryTextColor = successColor
+        primaryTextColor = successColor,
     )
 }
 
@@ -392,28 +395,28 @@ fun SpaceXLaunchedIndicator(
 fun SpaceXOverdueIndicator(
     modifier: Modifier = Modifier,
     textColor: Color = SpaceXColors.OnSurface,
-    errorColor: Color = SpaceXColors.Error
+    errorColor: Color = SpaceXColors.Error,
 ) {
     SpaceXStatusIndicator(
         primaryText = stringResource(R.string.overdue_indicator),
         secondaryText = stringResource(R.string.launch_time_has_passed),
         modifier = modifier,
         textColor = textColor,
-        primaryTextColor = errorColor
+        primaryTextColor = errorColor,
     )
 }
-
 
 @Preview(showBackground = true, backgroundColor = 0xFF151515)
 @Composable
 private fun SpaceXCountdownTimerPreview() {
     SpaceXTheme {
         SpaceXCountdownTimer(
-            countdown = CountdownData(
-                launchInstant = createFutureInstant(days = 2, hours = 5, minutes = 30),
-                launchName = "Starlink Group 2-38",
-                isLive = false
-            ),
+            countdown =
+                CountdownData(
+                    launchInstant = createFutureInstant(days = 2, hours = 5, minutes = 30),
+                    launchName = "Starlink Group 2-38",
+                    isLive = false,
+                ),
             modifier = Modifier.padding(SpaceXSpacing.CardMargin),
             countdownToLaunchText = "Countdown to Launch",
             countingText = "Counting",
@@ -423,7 +426,7 @@ private fun SpaceXCountdownTimerPreview() {
             daysText = "Days",
             hoursText = "Hours",
             minutesText = "Minutes",
-            secondsText = "Seconds"
+            secondsText = "Seconds",
         )
     }
 }
@@ -433,11 +436,12 @@ private fun SpaceXCountdownTimerPreview() {
 private fun SpaceXCountdownTimerLivePreview() {
     SpaceXTheme {
         SpaceXCountdownTimer(
-            countdown = CountdownData(
-                launchInstant = createPastInstant(minutes = 10),
-                launchName = "Falcon Heavy Demo",
-                isLive = true
-            ),
+            countdown =
+                CountdownData(
+                    launchInstant = createPastInstant(minutes = 10),
+                    launchName = "Falcon Heavy Demo",
+                    isLive = true,
+                ),
             modifier = Modifier.padding(SpaceXSpacing.CardMargin),
             countdownToLaunchText = "Countdown to Launch",
             countingText = "Counting",
@@ -447,7 +451,7 @@ private fun SpaceXCountdownTimerLivePreview() {
             daysText = "Days",
             hoursText = "Hours",
             minutesText = "Minutes",
-            secondsText = "Seconds"
+            secondsText = "Seconds",
         )
     }
 }
@@ -457,17 +461,18 @@ private fun SpaceXCountdownTimerLivePreview() {
 private fun SpaceXCountdownDisplayPreview() {
     SpaceXTheme {
         SpaceXCountdownDisplay(
-            timeRemaining = TimeRemaining(
-                days = 2,
-                hours = 5,
-                minutes = 30,
-                seconds = 45
-            ),
+            timeRemaining =
+                TimeRemaining(
+                    days = 2,
+                    hours = 5,
+                    minutes = 30,
+                    seconds = 45,
+                ),
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
             daysText = "Days",
             hoursText = "Hours",
             minutesText = "Minutes",
-            secondsText = "Seconds"
+            secondsText = "Seconds",
         )
     }
 }
@@ -478,18 +483,18 @@ private fun SpaceXTimeUnitPreview() {
     SpaceXTheme {
         Row(
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
-            horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium)
+            horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium),
         ) {
             SpaceXTimeUnit(
                 value = 2,
                 unit = "Days",
-                textColor = SpaceXColors.OnSurface
+                textColor = SpaceXColors.OnSurface,
             )
 
             SpaceXTimeUnit(
                 value = 5,
                 unit = "Hours",
-                textColor = SpaceXColors.OnSurface
+                textColor = SpaceXColors.OnSurface,
             )
         }
     }
@@ -501,14 +506,14 @@ private fun SpaceXCountdownStatusPreview() {
     SpaceXTheme {
         Column(
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
-            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium)
+            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium),
         ) {
             SpaceXCountdownStatus(
                 status = CountdownStatus.COUNTING,
                 countingText = "Counting",
                 liveText = "LIVE",
                 launchedText = "Launched",
-                overdueText = "Overdue"
+                overdueText = "Overdue",
             )
 
             SpaceXCountdownStatus(
@@ -516,7 +521,7 @@ private fun SpaceXCountdownStatusPreview() {
                 countingText = "Counting",
                 liveText = "LIVE",
                 launchedText = "Launched",
-                overdueText = "Overdue"
+                overdueText = "Overdue",
             )
 
             SpaceXCountdownStatus(
@@ -524,7 +529,7 @@ private fun SpaceXCountdownStatusPreview() {
                 countingText = "Counting",
                 liveText = "LIVE",
                 launchedText = "Launched",
-                overdueText = "Overdue"
+                overdueText = "Overdue",
             )
 
             SpaceXCountdownStatus(
@@ -532,7 +537,7 @@ private fun SpaceXCountdownStatusPreview() {
                 countingText = "Counting",
                 liveText = "LIVE",
                 launchedText = "Launched",
-                overdueText = "Overdue"
+                overdueText = "Overdue",
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.linkjf.spacex.launch.design_system.components
+package com.linkjf.spacex.launch.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,10 +17,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import coil3.compose.SubcomposeAsyncImage
-import com.linkjf.spacex.launch.design_system.theme.SpaceXColors
-import com.linkjf.spacex.launch.design_system.theme.SpaceXIcons
-import com.linkjf.spacex.launch.design_system.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.design_system.theme.SpaceXTheme
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXIcons
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
 
 @Composable
 fun SpaceXLaunchImage(
@@ -31,14 +31,15 @@ fun SpaceXLaunchImage(
     loadingColor: Color = SpaceXColors.Primary,
     errorColor: Color = SpaceXColors.OnSurfaceVariant,
     imageSize: Dp = SpaceXSpacing.LaunchImageDefaultSize,
-    strokeWidth: Dp = SpaceXSpacing.ProgressIndicatorStrokeWidth
+    strokeWidth: Dp = SpaceXSpacing.ProgressIndicatorStrokeWidth,
 ) {
     Box(
-        modifier = modifier
-            .size(imageSize)
-            .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusSmall))
-            .background(placeholderColor),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .size(imageSize)
+                .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusSmall))
+                .background(placeholderColor),
+        contentAlignment = Alignment.Center,
     ) {
         if (imageUrl != null) {
             SubcomposeAsyncImage(
@@ -50,7 +51,7 @@ fun SpaceXLaunchImage(
                     CircularProgressIndicator(
                         modifier = Modifier.size(SpaceXSpacing.IconMedium),
                         color = loadingColor,
-                        strokeWidth = strokeWidth
+                        strokeWidth = strokeWidth,
                     )
                 },
                 error = {
@@ -58,16 +59,16 @@ fun SpaceXLaunchImage(
                         imageVector = SpaceXIcons.PlayCircle,
                         contentDescription = contentDescription,
                         tint = errorColor,
-                        modifier = Modifier.size(SpaceXSpacing.IconMedium)
+                        modifier = Modifier.size(SpaceXSpacing.IconMedium),
                     )
-                }
+                },
             )
         } else {
             Icon(
                 imageVector = SpaceXIcons.PlayCircle,
                 contentDescription = contentDescription,
                 tint = errorColor,
-                modifier = Modifier.size(SpaceXSpacing.IconMedium)
+                modifier = Modifier.size(SpaceXSpacing.IconMedium),
             )
         }
     }
@@ -79,20 +80,21 @@ fun SpaceXLaunchImagePlaceholder(
     modifier: Modifier = Modifier,
     placeholderColor: Color = SpaceXColors.ImagePlaceholder,
     iconColor: Color = SpaceXColors.OnSurfaceVariant,
-    imageSize: Dp = SpaceXSpacing.LaunchImageDefaultSize
+    imageSize: Dp = SpaceXSpacing.LaunchImageDefaultSize,
 ) {
     Box(
-        modifier = modifier
-            .size(imageSize)
-            .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusSmall))
-            .background(placeholderColor),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .size(imageSize)
+                .clip(RoundedCornerShape(SpaceXSpacing.BorderRadiusSmall))
+                .background(placeholderColor),
+        contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = SpaceXIcons.PlayCircle,
             contentDescription = contentDescription,
             tint = iconColor,
-            modifier = Modifier.size(SpaceXSpacing.IconMedium)
+            modifier = Modifier.size(SpaceXSpacing.IconMedium),
         )
     }
 }
@@ -106,7 +108,7 @@ private fun SpaceXLaunchImagePreview() {
             contentDescription = "Launch patch",
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
             imageSize = SpaceXSpacing.LaunchImageDefaultSize,
-            strokeWidth = SpaceXSpacing.ProgressIndicatorStrokeWidth
+            strokeWidth = SpaceXSpacing.ProgressIndicatorStrokeWidth,
         )
     }
 }
@@ -118,7 +120,7 @@ private fun SpaceXLaunchImagePlaceholderPreview() {
         SpaceXLaunchImagePlaceholder(
             contentDescription = "Launch patch placeholder",
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
-            imageSize = SpaceXSpacing.LaunchImageDefaultSize
+            imageSize = SpaceXSpacing.LaunchImageDefaultSize,
         )
     }
 }
@@ -132,7 +134,7 @@ private fun SpaceXLaunchImageWithUrlPreview() {
             contentDescription = "FalconSat launch patch",
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
             imageSize = SpaceXSpacing.LaunchImageDefaultSize,
-            strokeWidth = SpaceXSpacing.ProgressIndicatorStrokeWidth
+            strokeWidth = SpaceXSpacing.ProgressIndicatorStrokeWidth,
         )
     }
 }
