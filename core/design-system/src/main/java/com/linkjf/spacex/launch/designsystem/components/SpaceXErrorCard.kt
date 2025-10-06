@@ -48,16 +48,18 @@ fun SpaceXErrorCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = backgroundColor,
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = backgroundColor,
+            ),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(SpaceXSpacing.Medium),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(SpaceXSpacing.Medium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -71,9 +73,9 @@ fun SpaceXErrorCard(
                     tint = contentColor,
                     modifier = Modifier.size(20.dp),
                 )
-                
+
                 Spacer(modifier = Modifier.width(SpaceXSpacing.Small))
-                
+
                 Text(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
@@ -81,7 +83,7 @@ fun SpaceXErrorCard(
                     modifier = Modifier.weight(1f),
                 )
             }
-            
+
             IconButton(
                 onClick = onDismiss,
                 modifier = Modifier.size(24.dp),
@@ -107,12 +109,13 @@ fun SpaceXRateLimitCard(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val displayMessage = if (retryAfterSeconds != null) {
-        "$message Please try again in $retryAfterSeconds seconds."
-    } else {
-        "$message Please try again later."
-    }
-    
+    val displayMessage =
+        if (retryAfterSeconds != null) {
+            "$message Please try again in $retryAfterSeconds seconds."
+        } else {
+            "$message Please try again later."
+        }
+
     SpaceXErrorCard(
         message = displayMessage,
         onDismiss = onDismiss,
@@ -135,13 +138,13 @@ private fun SpaceXErrorCardPreview() {
                 message = "Network error. Please check your connection.",
                 onDismiss = { },
             )
-            
+
             SpaceXRateLimitCard(
                 message = "Rate limit exceeded.",
                 retryAfterSeconds = 60,
                 onDismiss = { },
             )
-            
+
             SpaceXRateLimitCard(
                 message = "Rate limit exceeded.",
                 retryAfterSeconds = null,

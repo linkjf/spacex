@@ -7,9 +7,11 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.linkjf.spacex.launch.database.converter.Converters
 import com.linkjf.spacex.launch.database.dao.LaunchDao
+import com.linkjf.spacex.launch.database.dao.LaunchRemoteKeysDao
 import com.linkjf.spacex.launch.database.dao.LaunchpadDao
 import com.linkjf.spacex.launch.database.dao.RocketDao
 import com.linkjf.spacex.launch.database.entity.LaunchEntity
+import com.linkjf.spacex.launch.database.entity.LaunchesRemoteKeysEntity
 import com.linkjf.spacex.launch.database.entity.LaunchpadEntity
 import com.linkjf.spacex.launch.database.entity.RocketEntity
 
@@ -21,13 +23,16 @@ import com.linkjf.spacex.launch.database.entity.RocketEntity
         LaunchEntity::class,
         RocketEntity::class,
         LaunchpadEntity::class,
+        LaunchesRemoteKeysEntity::class,
     ],
-    version = 1,
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
 abstract class SpaceXDatabase : RoomDatabase() {
     abstract fun launchDao(): LaunchDao
+
+    abstract fun launchRemoteKeyDao(): LaunchRemoteKeysDao
 
     abstract fun rocketDao(): RocketDao
 

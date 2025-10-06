@@ -1,6 +1,7 @@
 package com.linkjf.spacex.launch.designsystem.theme
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.runtime.Composable
@@ -19,4 +20,5 @@ object SpaceXIcons {
     val Rain: ImageVector
         @Composable get() = ImageVector.vectorResource(id = R.drawable.ic_rain_condition)
     val Sun: ImageVector = Icons.Default.WbSunny
+    val Refresh: ImageVector = Icons.Default.Refresh
 }

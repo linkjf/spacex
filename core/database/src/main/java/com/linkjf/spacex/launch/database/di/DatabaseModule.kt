@@ -3,6 +3,7 @@ package com.linkjf.spacex.launch.database.di
 import android.content.Context
 import com.linkjf.spacex.launch.database.SpaceXDatabase
 import com.linkjf.spacex.launch.database.dao.LaunchDao
+import com.linkjf.spacex.launch.database.dao.LaunchRemoteKeysDao
 import com.linkjf.spacex.launch.database.dao.LaunchpadDao
 import com.linkjf.spacex.launch.database.dao.RocketDao
 import dagger.Module
@@ -32,4 +33,7 @@ object DatabaseModule {
 
     @Provides
     fun provideLaunchpadDao(database: SpaceXDatabase): LaunchpadDao = database.launchpadDao()
+
+    @Provides
+    fun provideRemoteKeysDao(database: SpaceXDatabase): LaunchRemoteKeysDao = database.launchRemoteKeyDao()
 }

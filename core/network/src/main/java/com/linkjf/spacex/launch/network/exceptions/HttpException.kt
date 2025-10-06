@@ -3,8 +3,10 @@ package com.linkjf.spacex.launch.network.exceptions
 /**
  * Custom exception for HTTP errors
  */
-sealed class HttpException(message: String, cause: Throwable? = null) : Exception(message, cause) {
-    
+sealed class HttpException(
+    message: String,
+    cause: Throwable? = null,
+) : Exception(message, cause) {
     /**
      * HTTP 429 Too Many Requests - Rate limiting
      */
@@ -12,7 +14,7 @@ sealed class HttpException(message: String, cause: Throwable? = null) : Exceptio
         val retryAfterSeconds: Int? = null,
         message: String = "Too many requests. Please try again later.",
     ) : HttpException(message)
-    
+
     /**
      * Generic HTTP error
      */
@@ -20,7 +22,7 @@ sealed class HttpException(message: String, cause: Throwable? = null) : Exceptio
         val statusCode: Int,
         message: String,
     ) : HttpException(message)
-    
+
     /**
      * Network connectivity error
      */

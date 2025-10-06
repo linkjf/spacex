@@ -2,13 +2,8 @@ package com.linkjf.spacex.launch.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 
-/**
- * Database entity for storing launch data locally
- */
 @Entity(tableName = "launches")
-@Serializable
 data class LaunchEntity(
     @PrimaryKey
     val id: String,

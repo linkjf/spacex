@@ -39,22 +39,17 @@ android {
 dependencies {
     implementation(project(":core:tools"))
 
-    // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
-
-    // Hilt
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
-
-    // Kotlinx Serialization
     implementation(libs.kotlinx.serialization.json)
-
-    // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
-    // Testing
     testImplementation(libs.junit)
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.kotlinx.coroutines.test)

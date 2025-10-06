@@ -7,17 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.linkjf.spacex.launch.designsystem.components.LaunchListItem
-import com.linkjf.spacex.launch.designsystem.components.PaginationConfig
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.linkjf.spacex.launch.designsystem.components.SpaceXErrorCard
-import com.linkjf.spacex.launch.designsystem.components.SpaceXLaunchListWithPagination
+import com.linkjf.spacex.launch.designsystem.components.SpaceXLaunchListWithPaging3
 import com.linkjf.spacex.launch.designsystem.components.SpaceXRateLimitCard
 import com.linkjf.spacex.launch.designsystem.components.SpaceXScreenHeader
 import com.linkjf.spacex.launch.designsystem.components.SpaceXTabSelector
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
-import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
 import com.linkjf.spacex.launch.mvi.EventEffect
 
 @Composable
@@ -32,6 +29,16 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+
+    val upcomingLaunchesPagingItems = viewModel.upcomingLaunches.collectAsLazyPagingItems()
+    val pastLaunchesPagingItems = viewModel.pastLaunches.collectAsLazyPagingItems()
+
+    val currentPagingItems =
+        if (state.selectedTabIndex == 0) {
+            upcomingLaunchesPagingItems
+        } else {
+            pastLaunchesPagingItems
+        }
 
     EventEffect(flow = viewModel.event) { event ->
         when (event) {
@@ -62,7 +69,6 @@ fun HomeScreen(
             },
         )
 
-        // Display rate limit error
         state.rateLimitError?.let { rateLimitError ->
             SpaceXRateLimitCard(
                 message = rateLimitError.message,
@@ -71,7 +77,6 @@ fun HomeScreen(
             )
         }
 
-        // Display general error message
         state.errorMessage?.let { errorMessage ->
             SpaceXErrorCard(
                 message = errorMessage,
@@ -79,185 +84,20 @@ fun HomeScreen(
             )
         }
 
-        SpaceXLaunchListWithPagination(
-            launches =
-                state.launches.map { launch ->
-                    val weatherData = viewModel.generateWeatherData(launch.id)
-                    val rocketName = viewModel.getRocketName(launch.rocketId)
-                    val launchpadName = viewModel.getLaunchpadName(launch.launchpadId)
-                    val formattedDate = viewModel.formatLaunchDate(launch.dateUtc)
-                    val formattedTime = viewModel.formatLaunchTime(launch.dateUtc)
-                    val countdown = viewModel.calculateCountdown(launch.dateUtc, launch.upcoming)
-
-                    LaunchListItem(
-                        id = launch.id,
-                        name = launch.name,
-                        date = formattedDate,
-                        time = formattedTime,
-                        rocketId = rocketName,
-                        launchpadId = launchpadName,
-                        patchImageUrl = launch.links?.patch?.small,
-                        windSpeed = weatherData.windSpeed,
-                        cloudCover = weatherData.cloudCover,
-                        rainfall = weatherData.rainfall,
-                        countdown = countdown,
-                        isUpcoming = launch.upcoming,
-                    )
+        SpaceXLaunchListWithPaging3(
+            lazyPagingItems = currentPagingItems,
+            onLaunchClick = { launchItem ->
+                viewModel.reduce(HomeAction.TapLaunch(launchItem.id))
+            },
+            onWatchClick = { launchItem ->
+                viewModel.reduce(HomeAction.TapWatch(launchItem.id))
+            },
+            emptyMessage =
+                if (state.selectedTabIndex == 0) {
+                    "No upcoming launches available"
+                } else {
+                    "No past launches available"
                 },
-            onLaunchClick = { launch -> viewModel.reduce(HomeAction.TapLaunch(launch.id)) },
-            onWatchClick = { launch -> viewModel.reduce(HomeAction.TapWatch(launch.id)) },
-            paginationConfig =
-                PaginationConfig(
-                    isLoadingMore = state.isLoadingMore,
-                    hasMoreItems = state.hasMoreItems,
-                    onLoadMore = { viewModel.reduce(HomeAction.LoadMore) },
-                ),
-            hasError = state.errorMessage != null || state.rateLimitError != null,
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF151515)
-@Composable
-private fun HomeScreenPreview() {
-    SpaceXTheme {
-        HomeScreenPreviewContent(
-            launches =
-                listOf(
-                    LaunchListItem(
-                        id = "launch_1",
-                        name = "Starlink Group 2-38",
-                        date = "Oct/4/2025",
-                        time = "10:00",
-                        rocketId = "Falcon 4",
-                        launchpadId = "LCS-421",
-                        patchImageUrl = null,
-                        windSpeed = "55 m/h",
-                        cloudCover = "35%",
-                        rainfall = "0.0mm",
-                        countdown = "89min",
-                        isUpcoming = true,
-                    ),
-                    LaunchListItem(
-                        id = "launch_2",
-                        name = "Starlink Group 2-39",
-                        date = "Oct/6/2025",
-                        time = "14:30",
-                        rocketId = "Falcon 9",
-                        launchpadId = "SLC-40",
-                        patchImageUrl = "https://example.com/image2.jpg",
-                        windSpeed = "45 m/h",
-                        cloudCover = "20%",
-                        rainfall = "0.0mm",
-                        countdown = "2h 15min",
-                        isUpcoming = true,
-                    ),
-                    LaunchListItem(
-                        id = "launch_3",
-                        name = "Falcon Heavy Demo",
-                        date = "Oct/8/2025",
-                        time = "16:00",
-                        rocketId = "Falcon Heavy",
-                        launchpadId = "KSC LC-39A",
-                        patchImageUrl = null,
-                        windSpeed = "60 m/h",
-                        cloudCover = "40%",
-                        rainfall = "1.2mm",
-                        countdown = "3d 2h",
-                        isUpcoming = true,
-                    ),
-                ),
-            selectedTabIndex = 0,
-            isLoading = false,
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF151515)
-@Composable
-private fun HomeScreenPackTabPreview() {
-    SpaceXTheme {
-        HomeScreenPreviewContent(
-            launches =
-                listOf(
-                    LaunchListItem(
-                        id = "launch_4",
-                        name = "Starlink Group 1-45",
-                        date = "Sep/28/2025",
-                        time = "12:00",
-                        rocketId = "Falcon 9",
-                        launchpadId = "SLC-40",
-                        patchImageUrl = "https://example.com/image2.jpg",
-                        windSpeed = "30 m/h",
-                        cloudCover = "15%",
-                        rainfall = "0.0mm",
-                        countdown = "Completed",
-                        isUpcoming = false,
-                    ),
-                ),
-            selectedTabIndex = 1,
-            isLoading = false,
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF151515)
-@Composable
-private fun HomeScreenLoadingPreview() {
-    SpaceXTheme {
-        HomeScreenPreviewContent(
-            launches = emptyList(),
-            selectedTabIndex = 0,
-            isLoading = true,
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF151515)
-@Composable
-private fun HomeScreenEmptyPreview() {
-    SpaceXTheme {
-        HomeScreenPreviewContent(
-            launches = emptyList(),
-            selectedTabIndex = 0,
-            isLoading = false,
-        )
-    }
-}
-
-@Composable
-private fun HomeScreenPreviewContent(
-    modifier: Modifier = Modifier,
-    launches: List<LaunchListItem>,
-    selectedTabIndex: Int,
-    isLoading: Boolean,
-) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium),
-    ) {
-        SpaceXScreenHeader(
-            title = "Launches",
-            onSearchClick = { },
-            searchContentDescription = "Settings",
-        )
-
-        SpaceXTabSelector(
-            tabs = listOf("Upcoming", "Pack"),
-            selectedIndex = selectedTabIndex,
-            onTabSelected = { },
-        )
-
-        SpaceXLaunchListWithPagination(
-            launches = launches,
-            onLaunchClick = { },
-            onWatchClick = { },
-            paginationConfig =
-                PaginationConfig(
-                    isLoadingMore = false,
-                    hasMoreItems = true,
-                    onLoadMore = { },
-                ),
         )
     }
 }

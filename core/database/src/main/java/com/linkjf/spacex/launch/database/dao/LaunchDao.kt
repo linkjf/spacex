@@ -1,20 +1,17 @@
 package com.linkjf.spacex.launch.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import com.linkjf.spacex.launch.database.entity.LaunchEntity
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Data Access Object for launch operations
- */
 @Dao
 interface LaunchDao {
     @Query("SELECT * FROM launches WHERE upcoming = :isUpcoming ORDER BY dateUtc ASC")
-    fun getLaunchesByType(isUpcoming: Boolean): Flow<List<LaunchEntity>>
+    fun pagingSource(isUpcoming: Boolean): PagingSource<Int, LaunchEntity>
 
     @Query("SELECT * FROM launches WHERE upcoming = :isUpcoming ORDER BY dateUtc ASC LIMIT :limit OFFSET :offset")
     fun getLaunchesByTypePaginated(
@@ -36,7 +33,7 @@ interface LaunchDao {
     suspend fun insertLaunches(launches: List<LaunchEntity>)
 
     @Query("DELETE FROM launches WHERE upcoming = :isUpcoming")
-    suspend fun deleteLaunchesByType(isUpcoming: Boolean)
+    suspend fun deleteByType(isUpcoming: Boolean)
 
     @Query("DELETE FROM launches")
     suspend fun deleteAllLaunches()

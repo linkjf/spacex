@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,6 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXIcons
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
@@ -454,7 +457,7 @@ fun SpaceXLaunchListWithPagination(
         }.collect { lastVisibleIndex ->
             if (paginationConfig.hasMoreItems && !paginationConfig.isLoadingMore) {
                 val totalItems = launches.size
-                
+
                 // Only trigger when reaching the very last item (index = totalItems - 1)
                 if (lastVisibleIndex != null && lastVisibleIndex >= totalItems - 1) {
                     paginationConfig.onLoadMore()
@@ -698,3 +701,163 @@ private fun SpaceXLaunchListFilteredPreview() {
         )
     }
 }
+
+/**
+ * SpaceXLaunchList with Paging 3 support
+ */
+@Composable
+fun SpaceXLaunchListWithPaging3(
+    lazyPagingItems: LazyPagingItems<LaunchListItem>,
+    onLaunchClick: (LaunchListItem) -> Unit,
+    onWatchClick: (LaunchListItem) -> Unit,
+    modifier: Modifier = Modifier,
+    emptyMessage: String = "No launches available",
+    loadingColor: Color = SpaceXColors.Primary,
+    textColor: Color = SpaceXColors.OnSurface,
+    contentPadding: PaddingValues = PaddingValues(SpaceXSpacing.HeaderPadding),
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = contentPadding,
+        verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium),
+    ) {
+        items(
+            count = lazyPagingItems.itemCount,
+            key = lazyPagingItems.itemKey { it.id },
+            contentType = lazyPagingItems.itemContentType(),
+        ) { index ->
+            val launch = lazyPagingItems[index]
+            if (launch != null) {
+                SpaceXLaunchCard(
+                    launch = launch.toLaunchData(),
+                    onWatchClick = { onWatchClick(launch) },
+                    onClick = { onLaunchClick(launch) },
+                )
+            } else {
+                // Placeholder while loading
+                SpaceXLaunchCardPlaceholder()
+            }
+        }
+
+        // Footer load state (append)
+        item {
+            when (val loadState = lazyPagingItems.loadState.append) {
+                is LoadState.Loading -> {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(SpaceXSpacing.Medium),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(SpaceXSpacing.Large),
+                            color = loadingColor,
+                        )
+                    }
+                }
+
+                is LoadState.Error -> {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(SpaceXSpacing.Medium),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
+                        ) {
+                            Text(
+                                text = "Failed to load more launches",
+                                style = SpaceXTypography.Typography.bodyMedium,
+                                color = textColor,
+                                textAlign = TextAlign.Center,
+                            )
+                            SpaceXIconButton(
+                                icon = SpaceXIcons.Refresh,
+                                onClick = { lazyPagingItems.retry() },
+                                contentDescription = "Retry",
+                            )
+                        }
+                    }
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
+    // Full-screen states
+    when (val loadState = lazyPagingItems.loadState.refresh) {
+        is LoadState.Loading -> {
+            SpaceXLoadingState(
+                modifier = modifier,
+                loadingColor = loadingColor,
+            )
+        }
+
+        is LoadState.Error -> {
+            SpaceXErrorCard(
+                message = "Failed to load launches: ${loadState.error.message}",
+                onDismiss = { lazyPagingItems.retry() },
+                modifier = modifier,
+            )
+        }
+
+        else -> {
+            if (lazyPagingItems.itemCount == 0) {
+                SpaceXEmptyState(
+                    message = emptyMessage,
+                    modifier = modifier,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SpaceXLaunchCardPlaceholder() {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(SpaceXSpacing.Small),
+    ) {
+        // Placeholder content - you can customize this
+        Column(
+            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(SpaceXSpacing.Small),
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(SpaceXSpacing.Medium),
+                    color = SpaceXColors.Primary,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Extension function to convert LaunchListItem to LaunchData
+ */
+private fun LaunchListItem.toLaunchData(): LaunchData =
+    LaunchData(
+        id = id,
+        name = name,
+        date = date,
+        time = time,
+        rocketId = rocketId,
+        launchpadId = launchpadId,
+        patchImageUrl = patchImageUrl,
+        windSpeed = windSpeed,
+        cloudCover = cloudCover,
+        rainfall = rainfall,
+        countdown = countdown,
+    )
