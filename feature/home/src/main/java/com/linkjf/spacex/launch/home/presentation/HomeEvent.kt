@@ -4,7 +4,6 @@ package com.linkjf.spacex.launch.home.presentation
  * Represents events that should trigger UI effects (navigation, showing dialogs, etc.)
  */
 sealed interface HomeEvent {
-    // Navigation events
     data object NavigateToSettings : HomeEvent
 
     data object NavigateBack : HomeEvent
@@ -13,7 +12,6 @@ sealed interface HomeEvent {
         val launchId: String,
     ) : HomeEvent
 
-    // External navigation events
     data class OpenWebcast(
         val url: String,
     ) : HomeEvent
@@ -26,7 +24,6 @@ sealed interface HomeEvent {
         val url: String,
     ) : HomeEvent
 
-    // UI feedback events
     data class ShowError(
         val message: String,
     ) : HomeEvent

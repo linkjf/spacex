@@ -1,22 +1,16 @@
 package com.linkjf.spacex.launch.home.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.linkjf.spacex.launch.home.domain.model.Launch
-import com.linkjf.spacex.launch.home.domain.model.Rocket
 import com.linkjf.spacex.launch.home.domain.model.Launchpad
+import com.linkjf.spacex.launch.home.domain.model.Rocket
 import com.linkjf.spacex.launch.home.domain.usecase.GetPastLaunchesUseCase
 import com.linkjf.spacex.launch.home.domain.usecase.GetUpcomingLaunchesUseCase
-import com.linkjf.spacex.launch.home.domain.usecase.GetRocketsUseCase
-import com.linkjf.spacex.launch.home.domain.usecase.GetLaunchpadsUseCase
-import com.linkjf.spacex.launch.home.domain.usecase.GetRocketUseCase
-import com.linkjf.spacex.launch.home.domain.usecase.GetLaunchpadUseCase
 import com.linkjf.spacex.launch.mvi.StateViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -26,10 +20,6 @@ class HomeViewModel
     constructor(
         private val getUpcomingLaunches: GetUpcomingLaunchesUseCase,
         private val getPastLaunches: GetPastLaunchesUseCase,
-        private val getRockets: GetRocketsUseCase,
-        private val getLaunchpads: GetLaunchpadsUseCase,
-        private val getRocket: GetRocketUseCase,
-        private val getLaunchpad: GetLaunchpadUseCase,
     ) : StateViewModel<HomeState, HomeEvent, HomeAction>(HomeState()) {
         init {
             loadInitialData()
@@ -37,18 +27,14 @@ class HomeViewModel
 
         override fun reduce(action: HomeAction) {
             when (action) {
-                // Navigation actions
                 HomeAction.TapSettings -> HomeEvent.NavigateToSettings.sendToEvent()
 
-                // Filter actions
                 is HomeAction.SelectFilter -> selectFilter(action.filter)
                 is HomeAction.SelectTab -> selectTab(action.tabIndex)
 
-                // Refresh and loading actions
                 HomeAction.PullToRefresh -> refresh()
                 HomeAction.LoadMore -> loadMore()
 
-                // Launch item actions
                 is HomeAction.TapLaunch ->
                     HomeEvent
                         .NavigateToLaunchDetails(action.launchId)
@@ -56,7 +42,6 @@ class HomeViewModel
 
                 is HomeAction.TapWatch -> handleWatchAction(action.launchId)
 
-                // Error handling
                 HomeAction.DismissError -> dismissError()
                 HomeAction.Retry -> retry()
             }
@@ -107,8 +92,6 @@ class HomeViewModel
             state.value.copy(isLoadingMore = true).sendToState()
 
             viewModelScope.launch {
-                // TODO: Implement pagination logic
-                // For now, just simulate loading more
                 kotlinx.coroutines.delay(1000)
                 state.value.copy(isLoadingMore = false).sendToState()
             }
@@ -145,25 +128,50 @@ class HomeViewModel
         private fun loadAllData() {
             viewModelScope.launch {
                 try {
-                    // Fetch all rockets and launchpads first
-                    val rocketsResult = getRockets()
-                    val launchpadsResult = getLaunchpads()
-                    
-                    val allRockets = rocketsResult.getOrElse { emptyList() }.associateBy { it.id }
-                    val allLaunchpads = launchpadsResult.getOrElse { emptyList() }.associateBy { it.id }
-                    
-                    // Debug logging
-                    println("DEBUG: Fetched ${allRockets.size} rockets: ${allRockets.keys}")
-                    println("DEBUG: Fetched ${allLaunchpads.size} launchpads: ${allLaunchpads.keys}")
-                    
-                    // Update state with all rockets and launchpads
-                    state.value.copy(
-                        allRockets = allRockets,
-                        allLaunchpads = allLaunchpads
-                    ).sendToState()
-                    
-                    // Now load launches
-                    loadLaunches()
+                    val upcomingResult = getUpcomingLaunches()
+                    val pastResult = getPastLaunches()
+
+                    val upcomingLaunches = upcomingResult.getOrElse { emptyList() }
+                    val pastLaunches = pastResult.getOrElse { emptyList() }
+
+                    val allRockets = mutableMapOf<String, Rocket>()
+                    val allLaunchpads = mutableMapOf<String, Launchpad>()
+
+                    (upcomingLaunches + pastLaunches).forEach { launch ->
+                        launch.rocket?.let { rocket ->
+                            allRockets[rocket.id] = rocket
+                        }
+                        launch.launchpad?.let { launchpad ->
+                            allLaunchpads[launchpad.id] = launchpad
+                        }
+                    }
+
+                    println("DEBUG: Extracted ${allRockets.size} rockets from embedded data: ${allRockets.keys}")
+                    println("DEBUG: Extracted ${allLaunchpads.size} launchpads from embedded data: ${allLaunchpads.keys}")
+
+                    state.value
+                        .copy(
+                            allRockets = allRockets,
+                            allLaunchpads = allLaunchpads,
+                        ).sendToState()
+
+                    val launchesToShow =
+                        when (state.value.selectedFilter) {
+                            LaunchFilter.UPCOMING -> upcomingLaunches
+                            LaunchFilter.PACK -> pastLaunches
+                        }
+
+                    println("DEBUG: Loaded ${launchesToShow.size} launches for ${state.value.selectedFilter}")
+                    launchesToShow.take(3).forEach { launch ->
+                        println("DEBUG: Launch ${launch.name} - Rocket ID: ${launch.rocketId}, Launchpad ID: ${launch.launchpadId}")
+                    }
+
+                    state.value
+                        .copy(
+                            launches = launchesToShow,
+                            isLoading = false,
+                            errorMessage = null,
+                        ).sendToState()
                 } catch (e: Exception) {
                     state.value
                         .copy(
@@ -186,21 +194,18 @@ class HomeViewModel
 
                     result.fold(
                         onSuccess = { launches ->
-                            // Debug logging for launch data
+
                             println("DEBUG: Loaded ${launches.size} launches")
                             launches.take(3).forEach { launch ->
                                 println("DEBUG: Launch ${launch.name} - Rocket ID: ${launch.rocketId}, Launchpad ID: ${launch.launchpadId}")
                             }
-                            
+
                             state.value
                                 .copy(
                                     launches = launches,
                                     isLoading = false,
                                     errorMessage = null,
                                 ).sendToState()
-                            
-                            // Fetch individual rocket and launchpad data for each launch
-                            loadIndividualRocketAndLaunchpadData(launches)
                         },
                         onFailure = { error ->
                             state.value
@@ -224,157 +229,92 @@ class HomeViewModel
             }
         }
 
-        private fun loadIndividualRocketAndLaunchpadData(launches: List<Launch>) {
-            viewModelScope.launch {
-                supervisorScope {
-                    try {
-                        // Collect unique rocket and launchpad IDs
-                        val rocketIds = launches.map { it.rocketId }.distinct()
-                        val launchpadIds = launches.map { it.launchpadId }.distinct()
-                        
-                        // Fetch rockets and launchpads in parallel
-                        val rocketResults = rocketIds.map { rocketId ->
-                            async {
-                                try {
-                                    val result = getRocket(rocketId)
-                                    result.fold(
-                                        onSuccess = { rocket -> 
-                                            println("DEBUG: Successfully fetched rocket ${rocket.name} for ID $rocketId")
-                                            rocketId to rocket.name
-                                        },
-                                        onFailure = { error ->
-                                            println("DEBUG: Failed to fetch rocket $rocketId: ${error.message}")
-                                            rocketId to getFallbackRocketName(rocketId)
-                                        }
-                                    )
-                                } catch (e: Exception) {
-                                    println("DEBUG: Exception fetching rocket $rocketId: ${e.message}")
-                                    rocketId to getFallbackRocketName(rocketId)
-                                }
-                            }
-                        }
-                        
-                        val launchpadResults = launchpadIds.map { launchpadId ->
-                            async {
-                                try {
-                                    val result = getLaunchpad(launchpadId)
-                                    result.fold(
-                                        onSuccess = { launchpad -> 
-                                            println("DEBUG: Successfully fetched launchpad ${launchpad.name} for ID $launchpadId")
-                                            launchpadId to launchpad.name
-                                        },
-                                        onFailure = { error ->
-                                            println("DEBUG: Failed to fetch launchpad $launchpadId: ${error.message}")
-                                            launchpadId to getFallbackLaunchpadName(launchpadId)
-                                        }
-                                    )
-                                } catch (e: Exception) {
-                                    println("DEBUG: Exception fetching launchpad $launchpadId: ${e.message}")
-                                    launchpadId to getFallbackLaunchpadName(launchpadId)
-                                }
-                            }
-                        }
-                        
-                        // Wait for all requests to complete
-                        val rocketNames = rocketResults.map { it.await() }.toMap()
-                        val launchpadNames = launchpadResults.map { it.await() }.toMap()
-                        
-                        // Update state with the fetched names
-                        state.value.copy(
-                            rocketNames = rocketNames,
-                            launchpadNames = launchpadNames
-                        ).sendToState()
-                        
-                    } catch (e: Exception) {
-                        println("DEBUG: Exception in loadIndividualRocketAndLaunchpadData: ${e.message}")
-                    }
-                }
-            }
-        }
-
-        private fun getFallbackRocketName(rocketId: String): String {
-            return when {
-                rocketId.contains("falcon1", ignoreCase = true) -> "Falcon 1"
-                rocketId.contains("falcon9", ignoreCase = true) -> "Falcon 9"
-                rocketId.contains("falconheavy", ignoreCase = true) -> "Falcon Heavy"
-                rocketId.contains("starship", ignoreCase = true) -> "Starship"
-                rocketId.contains("falcon", ignoreCase = true) -> "Falcon 9"
-                else -> "Unknown Rocket"
-            }
-        }
-
-        private fun getFallbackLaunchpadName(launchpadId: String): String {
-            return when {
-                launchpadId.contains("ksc", ignoreCase = true) -> "KSC LC-39A"
-                launchpadId.contains("slc", ignoreCase = true) -> "SLC-40"
-                launchpadId.contains("kwajalein", ignoreCase = true) -> "Kwajalein Atoll"
-                launchpadId.contains("lcs", ignoreCase = true) -> "LCS-421"
-                else -> "Unknown Launchpad"
-            }
-        }
-
-        // Helper functions for data formatting
-        fun formatLaunchDate(dateUtc: String): String {
-            return try {
-                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        fun formatLaunchDate(dateUtc: String): String =
+            try {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
                 val outputFormat = SimpleDateFormat("MMM/dd/yyyy   HH:mm", Locale.getDefault())
                 val date = inputFormat.parse(dateUtc)
                 outputFormat.format(date ?: Date())
             } catch (e: Exception) {
-                dateUtc // Return original if parsing fails
+                try {
+                    val inputFormatMs =
+                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                    val outputFormat = SimpleDateFormat("MMM/dd/yyyy   HH:mm", Locale.getDefault())
+                    val date = inputFormatMs.parse(dateUtc)
+                    outputFormat.format(date ?: Date())
+                } catch (e2: Exception) {
+                    dateUtc
+                }
             }
-        }
 
-        fun calculateCountdown(dateUtc: String, isUpcoming: Boolean): String {
+        fun calculateCountdown(
+            dateUtc: String,
+            isUpcoming: Boolean,
+        ): String {
             if (!isUpcoming) return "Completed"
-            
+
             return try {
-                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
                 val launchDate = inputFormat.parse(dateUtc) ?: return "TBD"
                 val now = Date()
                 val diffInMillis = launchDate.time - now.time
-                
+
                 if (diffInMillis <= 0) return "Launched"
-                
+
                 val days = TimeUnit.MILLISECONDS.toDays(diffInMillis)
                 val hours = TimeUnit.MILLISECONDS.toHours(diffInMillis) % 24
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis) % 60
-                
+
                 when {
                     days > 0 -> "${days}d ${hours}h"
                     hours > 0 -> "${hours}h ${minutes}min"
                     else -> "${minutes}min"
                 }
             } catch (e: Exception) {
-                "TBD"
+                try {
+                    val inputFormatMs =
+                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                    val launchDate = inputFormatMs.parse(dateUtc) ?: return "TBD"
+                    val now = Date()
+                    val diffInMillis = launchDate.time - now.time
+
+                    if (diffInMillis <= 0) return "Launched"
+
+                    val days = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+                    val hours = TimeUnit.MILLISECONDS.toHours(diffInMillis) % 24
+                    val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis) % 60
+
+                    when {
+                        days > 0 -> "${days}d ${hours}h"
+                        hours > 0 -> "${hours}h ${minutes}min"
+                        else -> "${minutes}min"
+                    }
+                } catch (e2: Exception) {
+                    "TBD"
+                }
             }
         }
 
         fun generateWeatherData(launchId: String): WeatherData {
-            // Generate consistent pseudo-random weather data based on launch ID
-            val hash = Math.abs(launchId.hashCode()) // Ensure positive hash
-            val windSpeed = (30 + (hash % 40)).toString() // 30-70 m/h
-            val cloudCover = (10 + (hash % 50)).toString() + "%" // 10-60% (always positive)
-            val rainfall = if (hash % 10 < 2) "1.${hash % 10}mm" else "0.0mm" // Mostly 0.0mm, occasionally some rain
-            
+            val hash = Math.abs(launchId.hashCode())
+            val windSpeed = (30 + (hash % 40)).toString()
+            val cloudCover = (10 + (hash % 50)).toString() + "%"
+            val rainfall = if (hash % 10 < 2) "1.${hash % 10}mm" else "0.0mm"
+
             return WeatherData(
-                windSpeed = "${windSpeed} m/h",
+                windSpeed = "$windSpeed m/h",
                 cloudCover = cloudCover,
-                rainfall = rainfall
+                rainfall = rainfall,
             )
         }
 
-        fun getRocketName(rocketId: String): String {
-            return state.value.rocketNames[rocketId] ?: "Loading..."
-        }
+        fun getRocketName(rocketId: String): String = state.value.allRockets[rocketId]?.name ?: "Unknown Rocket"
 
-        fun getLaunchpadName(launchpadId: String): String {
-            return state.value.launchpadNames[launchpadId] ?: "Loading..."
-        }
+        fun getLaunchpadName(launchpadId: String): String = state.value.allLaunchpads[launchpadId]?.name ?: "Unknown Launchpad"
     }
 
-    data class WeatherData(
-        val windSpeed: String,
-        val cloudCover: String,
-        val rainfall: String
-    )
+data class WeatherData(
+    val windSpeed: String,
+    val cloudCover: String,
+    val rainfall: String,
+)

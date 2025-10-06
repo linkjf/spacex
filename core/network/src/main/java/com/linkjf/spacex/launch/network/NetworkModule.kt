@@ -47,14 +47,14 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @Named("spacex")
-    fun provideSpaceXRetrofit(
+    @Named("launchlibrary")
+    fun provideLaunchLibraryRetrofit(
         okHttpClient: OkHttpClient,
         json: Json,
     ): Retrofit =
         Retrofit
             .Builder()
-            .baseUrl(NetworkConstants.SPACEX_BASE_URL)
+            .baseUrl(NetworkConstants.LAUNCH_LIBRARY_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(NetworkConstants.JSON_MEDIA_TYPE.toMediaType()))
             .build()

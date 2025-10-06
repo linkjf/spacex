@@ -59,29 +59,29 @@ fun HomeScreen(
             },
         )
 
-            SpaceXLaunchList(
-                launches =
-                    state.launches.map { launch ->
-                        val weatherData = viewModel.generateWeatherData(launch.id)
-                        val rocketName = viewModel.getRocketName(launch.rocketId)
-                        val launchpadName = viewModel.getLaunchpadName(launch.launchpadId)
-                        val formattedDate = viewModel.formatLaunchDate(launch.dateUtc)
-                        val countdown = viewModel.calculateCountdown(launch.dateUtc, launch.upcoming)
-                        
-                        LaunchListItem(
-                            id = launch.id,
-                            name = launch.name,
-                            dateUtc = formattedDate,
-                            rocketId = rocketName,
-                            launchpadId = launchpadName,
-                            patchImageUrl = launch.links?.patch?.small,
-                            windSpeed = weatherData.windSpeed,
-                            cloudCover = weatherData.cloudCover,
-                            rainfall = weatherData.rainfall,
-                            countdown = countdown,
-                            isUpcoming = launch.upcoming,
-                        )
-                    },
+        SpaceXLaunchList(
+            launches =
+                state.launches.map { launch ->
+                    val weatherData = viewModel.generateWeatherData(launch.id)
+                    val rocketName = viewModel.getRocketName(launch.rocketId)
+                    val launchpadName = viewModel.getLaunchpadName(launch.launchpadId)
+                    val formattedDate = viewModel.formatLaunchDate(launch.dateUtc)
+                    val countdown = viewModel.calculateCountdown(launch.dateUtc, launch.upcoming)
+
+                    LaunchListItem(
+                        id = launch.id,
+                        name = launch.name,
+                        dateUtc = formattedDate,
+                        rocketId = rocketName,
+                        launchpadId = launchpadName,
+                        patchImageUrl = launch.links?.patch?.small,
+                        windSpeed = weatherData.windSpeed,
+                        cloudCover = weatherData.cloudCover,
+                        rainfall = weatherData.rainfall,
+                        countdown = countdown,
+                        isUpcoming = launch.upcoming,
+                    )
+                },
             onLaunchClick = { launch -> viewModel.reduce(HomeAction.TapLaunch(launch.id)) },
             onWatchClick = { launch -> viewModel.reduce(HomeAction.TapWatch(launch.id)) },
             isLoading = state.isLoading,
@@ -117,7 +117,7 @@ private fun HomeScreenPreview() {
                         dateUtc = "Oct/6/2025     14:30",
                         rocketId = "Falcon 9",
                         launchpadId = "SLC-40",
-                        patchImageUrl = "https://images2.imgbox.com/94/f2/NN6z45OK_o.png",
+                        patchImageUrl = "https://example.com/image2.jpg",
                         windSpeed = "45 m/h",
                         cloudCover = "20%",
                         rainfall = "0.0mm",
@@ -157,7 +157,7 @@ private fun HomeScreenPackTabPreview() {
                         dateUtc = "Sep/28/2025   12:00",
                         rocketId = "Falcon 9",
                         launchpadId = "SLC-40",
-                        patchImageUrl = "https://images2.imgbox.com/3c/0e/T8iJcSN3_o.png",
+                        patchImageUrl = "https://example.com/image2.jpg",
                         windSpeed = "30 m/h",
                         cloudCover = "15%",
                         rainfall = "0.0mm",
