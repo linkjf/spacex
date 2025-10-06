@@ -1,11 +1,7 @@
 package com.linkjf.spacex.launch.home.data.mapper
 
-import com.linkjf.spacex.launch.home.data.remote.dto.LaunchDto
-import com.linkjf.spacex.launch.home.data.remote.dto.LaunchLinksDto
-import com.linkjf.spacex.launch.home.data.remote.dto.LaunchPatchDto
-import com.linkjf.spacex.launch.home.domain.model.Launch
-import com.linkjf.spacex.launch.home.domain.model.LaunchLinks
-import com.linkjf.spacex.launch.home.domain.model.LaunchPatch
+import com.linkjf.spacex.launch.home.data.remote.dto.*
+import com.linkjf.spacex.launch.home.domain.model.*
 
 object LaunchMapper {
     fun mapToDomain(dto: LaunchDto): Launch =
@@ -19,6 +15,23 @@ object LaunchMapper {
             details = dto.details,
             success = dto.success,
             upcoming = dto.upcoming,
+            flightNumber = dto.flightNumber,
+            staticFireDateUtc = dto.staticFireDateUtc,
+            tbd = dto.tbd,
+            net = dto.net,
+            window = dto.window,
+            rocket = null, // Will be populated separately via API calls
+            launchpad = null, // Will be populated separately via API calls
+            payloads = dto.payloads,
+            capsules = dto.capsules,
+            ships = dto.ships,
+            crew = dto.crew,
+            cores = dto.cores?.map { CoreMapper.mapToDomain(it) },
+            fairings = dto.fairings?.let { FairingsMapper.mapToDomain(it) },
+            autoUpdate = dto.autoUpdate,
+            dateLocal = dto.dateLocal,
+            datePrecision = dto.datePrecision,
+            dateUnix = dto.dateUnix,
         )
 
     fun mapToDomain(dtos: List<LaunchDto>): List<Launch> = dtos.map { mapToDomain(it) }

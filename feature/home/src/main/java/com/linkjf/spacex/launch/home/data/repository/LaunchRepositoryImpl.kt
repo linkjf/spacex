@@ -21,4 +21,13 @@ class LaunchRepositoryImpl
             } catch (e: Exception) {
                 Result.failure(e)
             }
+
+        override suspend fun getPastLaunches(): Result<List<Launch>> =
+            try {
+                val launchDtos = spaceXApi.getPastLaunches()
+                val launches = LaunchMapper.mapToDomain(launchDtos)
+                Result.success(launches)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
     }

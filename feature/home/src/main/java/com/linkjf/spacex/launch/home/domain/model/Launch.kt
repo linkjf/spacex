@@ -10,6 +10,23 @@ data class Launch(
     val details: String? = null,
     val success: Boolean? = null,
     val upcoming: Boolean,
+    val flightNumber: Int? = null,
+    val staticFireDateUtc: String? = null,
+    val tbd: Boolean? = null,
+    val net: Boolean? = null,
+    val window: Int? = null,
+    val rocket: Rocket? = null,
+    val launchpad: Launchpad? = null,
+    val payloads: List<String>? = null,
+    val capsules: List<String>? = null,
+    val ships: List<String>? = null,
+    val crew: List<String>? = null,
+    val cores: List<Core>? = null,
+    val fairings: Fairings? = null,
+    val autoUpdate: Boolean? = null,
+    val dateLocal: String? = null,
+    val datePrecision: String? = null,
+    val dateUnix: Long? = null,
 )
 
 data class LaunchLinks(
