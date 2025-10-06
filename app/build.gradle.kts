@@ -104,9 +104,13 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(project(":feature:home"))
+    implementation(project(":core:design-system"))
+    implementation(project(":core:network"))
+    implementation(project(":core:database"))
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

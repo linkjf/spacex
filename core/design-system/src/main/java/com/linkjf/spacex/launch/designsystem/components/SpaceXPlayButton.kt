@@ -40,7 +40,7 @@ fun SpaceXPlayButtonWithText(
             modifier = Modifier.size(SpaceXSpacing.IconSmall),
         ) {
             Icon(
-                imageVector = SpaceXIcons.PlayCircle,
+                imageVector = SpaceXIcons.PlayVideo,
                 contentDescription = contentDescription,
                 tint = iconColor,
                 modifier = Modifier.size(SpaceXSpacing.IconSmall),
@@ -74,7 +74,7 @@ fun SpaceXPlayButtonVerticalWithText(
             modifier = Modifier.size(SpaceXSpacing.IconMedium),
         ) {
             Icon(
-                imageVector = SpaceXIcons.PlayCircle,
+                imageVector = SpaceXIcons.PlayVideo,
                 contentDescription = contentDescription,
                 tint = iconColor,
                 modifier = Modifier.size(SpaceXSpacing.IconSmall),

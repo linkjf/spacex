@@ -7,10 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.linkjf.spacex.launch.navigation.SpaceXNavigation
 import com.linkjf.spacex.launch.ui.theme.SpaceXLaunchTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,32 +22,28 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SpaceXLaunchTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding),
-                    )
-                }
+                SpaceXApp()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(
-    name: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier,
-    )
+fun SpaceXApp() {
+    val navController = rememberNavController()
+
+    Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
+        SpaceXNavigation(
+            navController = navController,
+            modifier = Modifier.padding(paddingValues),
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun SpaceXAppPreview() {
     SpaceXLaunchTheme {
-        Greeting("Android")
+        SpaceXApp()
     }
 }

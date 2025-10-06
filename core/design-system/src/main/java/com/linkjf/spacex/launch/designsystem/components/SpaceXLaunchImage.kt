@@ -56,7 +56,7 @@ fun SpaceXLaunchImage(
                 },
                 error = {
                     Icon(
-                        imageVector = SpaceXIcons.PlayCircle,
+                        imageVector = SpaceXIcons.PlayVideo,
                         contentDescription = contentDescription,
                         tint = errorColor,
                         modifier = Modifier.size(SpaceXSpacing.IconMedium),
@@ -65,7 +65,7 @@ fun SpaceXLaunchImage(
             )
         } else {
             Icon(
-                imageVector = SpaceXIcons.PlayCircle,
+                imageVector = SpaceXIcons.PlayVideo,
                 contentDescription = contentDescription,
                 tint = errorColor,
                 modifier = Modifier.size(SpaceXSpacing.IconMedium),
@@ -91,7 +91,7 @@ fun SpaceXLaunchImagePlaceholder(
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = SpaceXIcons.PlayCircle,
+            imageVector = SpaceXIcons.PlayVideo,
             contentDescription = contentDescription,
             tint = iconColor,
             modifier = Modifier.size(SpaceXSpacing.IconMedium),

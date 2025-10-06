@@ -113,7 +113,7 @@ fun SpaceXPlayButton(
 ) {
     SpaceXIconButton(
         onClick = onClick,
-        icon = SpaceXIcons.PlayCircle,
+        icon = SpaceXIcons.PlayVideo,
         contentDescription = contentDescription,
         modifier = modifier,
         iconColor = iconColor,
@@ -143,7 +143,7 @@ private fun SpaceXIconButtonWithRipplePreview() {
     SpaceXTheme {
         SpaceXIconButtonWithRipple(
             onClick = { },
-            icon = SpaceXIcons.PlayCircle,
+            icon = SpaceXIcons.PlayVideo,
             contentDescription = "Play",
             backgroundColor = SpaceXColors.Primary.copy(alpha = 0.1f),
             modifier = Modifier.padding(SpaceXSpacing.CardPadding),
