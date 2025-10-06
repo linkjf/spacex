@@ -1,5 +1,8 @@
 package com.linkjf.spacex.launch.home.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Launch(
     val id: String,
     val name: String,
@@ -29,6 +32,7 @@ data class Launch(
     val dateUnix: Long? = null,
 )
 
+@Serializable
 data class LaunchLinks(
     val patch: LaunchPatch? = null,
     val webcast: String? = null,
@@ -37,6 +41,7 @@ data class LaunchLinks(
     val wikipedia: String? = null,
 )
 
+@Serializable
 data class LaunchPatch(
     val small: String? = null,
     val large: String? = null,

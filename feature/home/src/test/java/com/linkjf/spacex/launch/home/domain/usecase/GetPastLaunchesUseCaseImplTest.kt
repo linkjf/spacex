@@ -1,6 +1,7 @@
 package com.linkjf.spacex.launch.home.domain.usecase
 
 import com.linkjf.spacex.launch.home.domain.model.Launch
+import com.linkjf.spacex.launch.home.domain.model.PaginatedLaunches
 import com.linkjf.spacex.launch.home.domain.repository.LaunchRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -31,68 +32,71 @@ class GetPastLaunchesUseCaseImplTest {
                     createSampleLaunch("launch1", "Launch 1", upcoming = false),
                     createSampleLaunch("launch2", "Launch 2", upcoming = false),
                 )
-            coEvery { launchRepository.getPastLaunches() } returns Result.success(expectedLaunches)
+            val paginatedLaunches = PaginatedLaunches(expectedLaunches, 2, false)
+            coEvery { launchRepository.getPastLaunches(20, 0) } returns Result.success(paginatedLaunches)
 
-            val result = getPastLaunchesUseCase()
+            val result = getPastLaunchesUseCase(20, 0)
 
             assertTrue("Result should be success", result.isSuccess)
-            assertEquals("Should return expected launches", expectedLaunches, result.getOrNull())
-            coVerify { launchRepository.getPastLaunches() }
+            assertEquals("Should return expected launches", expectedLaunches, result.getOrNull()?.launches)
+            coVerify { launchRepository.getPastLaunches(20, 0) }
         }
 
     @Test
     fun `invoke should return failure when repository returns failure`() =
         runTest {
             val exception = IOException("Network error")
-            coEvery { launchRepository.getPastLaunches() } returns Result.failure(exception)
+            coEvery { launchRepository.getPastLaunches(20, 0) } returns Result.failure(exception)
 
-            val result = getPastLaunchesUseCase()
+            val result = getPastLaunchesUseCase(20, 0)
 
             assertTrue("Result should be failure", result.isFailure)
             assertEquals("Should return the exception", exception, result.exceptionOrNull())
-            coVerify { launchRepository.getPastLaunches() }
+            coVerify { launchRepository.getPastLaunches(20, 0) }
         }
 
     @Test
     fun `invoke should handle empty list from repository`() =
         runTest {
             val emptyLaunches = emptyList<Launch>()
-            coEvery { launchRepository.getPastLaunches() } returns Result.success(emptyLaunches)
+            val paginatedLaunches = PaginatedLaunches(emptyLaunches, 0, false)
+            coEvery { launchRepository.getPastLaunches(20, 0) } returns Result.success(paginatedLaunches)
 
-            val result = getPastLaunchesUseCase()
+            val result = getPastLaunchesUseCase(20, 0)
 
             assertTrue("Result should be success", result.isSuccess)
             assertNotNull("Result should not be null", result.getOrNull())
-            assertTrue("Should return empty list", result.getOrNull()?.isEmpty() == true)
-            coVerify { launchRepository.getPastLaunches() }
+            assertTrue("Should return empty list", result.getOrNull()?.launches?.isEmpty() == true)
+            coVerify { launchRepository.getPastLaunches(20, 0) }
         }
 
     @Test
     fun `invoke should handle repository exception`() =
         runTest {
             val exception = RuntimeException("Repository error")
-            coEvery { launchRepository.getPastLaunches() } throws exception
+            coEvery { launchRepository.getPastLaunches(20, 0) } throws exception
 
             try {
-                getPastLaunchesUseCase()
+                getPastLaunchesUseCase(20, 0)
                 assertTrue("Should have thrown exception", false)
             } catch (e: RuntimeException) {
                 assertEquals("Should return the exception", exception, e)
             }
-            coVerify { launchRepository.getPastLaunches() }
+            coVerify { launchRepository.getPastLaunches(20, 0) }
         }
 
     @Test
     fun `invoke should be callable as function`() =
         runTest {
             val expectedLaunches = listOf(createSampleLaunch("launch1", "Launch 1", upcoming = false))
-            coEvery { launchRepository.getPastLaunches() } returns Result.success(expectedLaunches)
+            val paginatedLaunches = PaginatedLaunches(expectedLaunches, 1, false)
+            coEvery { launchRepository.getPastLaunches(20, 0) } returns Result.success(paginatedLaunches)
 
-            val result = getPastLaunchesUseCase()
+            val result = getPastLaunchesUseCase(20, 0)
 
             assertTrue("Result should be success", result.isSuccess)
-            assertEquals("Should return expected launches", expectedLaunches, result.getOrNull())
-            coVerify { launchRepository.getPastLaunches() }
+            assertEquals("Should return expected launches", expectedLaunches, result.getOrNull()?.launches)
+            coVerify { launchRepository.getPastLaunches(20, 0) }
         }
 
     private fun createSampleLaunch(

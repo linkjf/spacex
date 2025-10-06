@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +32,8 @@ import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
 data class LaunchListItem(
     val id: String,
     val name: String,
-    val dateUtc: String,
+    val date: String,
+    val time: String,
     val rocketId: String,
     val launchpadId: String,
     val patchImageUrl: String? = null,
@@ -38,7 +42,42 @@ data class LaunchListItem(
     val rainfall: String = "0.0mm",
     val countdown: String = "89min",
     val isUpcoming: Boolean = true,
-)
+) {
+    // Override equals and hashCode for better performance in LazyColumn
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is LaunchListItem) return false
+
+        return id == other.id &&
+            name == other.name &&
+            date == other.date &&
+            time == other.time &&
+            rocketId == other.rocketId &&
+            launchpadId == other.launchpadId &&
+            patchImageUrl == other.patchImageUrl &&
+            windSpeed == other.windSpeed &&
+            cloudCover == other.cloudCover &&
+            rainfall == other.rainfall &&
+            countdown == other.countdown &&
+            isUpcoming == other.isUpcoming
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + date.hashCode()
+        result = 31 * result + time.hashCode()
+        result = 31 * result + rocketId.hashCode()
+        result = 31 * result + launchpadId.hashCode()
+        result = 31 * result + (patchImageUrl?.hashCode() ?: 0)
+        result = 31 * result + windSpeed.hashCode()
+        result = 31 * result + cloudCover.hashCode()
+        result = 31 * result + rainfall.hashCode()
+        result = 31 * result + countdown.hashCode()
+        result = 31 * result + isUpcoming.hashCode()
+        return result
+    }
+}
 
 data class LaunchListError(
     val message: String,
@@ -83,32 +122,41 @@ fun SpaceXLaunchList(
         }
 
         else -> {
+            // Memoize the LaunchData conversion to avoid recomposition
+            val launchDataList =
+                remember(launches) {
+                    launches.map { launch ->
+                        LaunchData(
+                            id = launch.id,
+                            name = launch.name,
+                            date = launch.date,
+                            time = launch.time,
+                            rocketId = launch.rocketId,
+                            launchpadId = launch.launchpadId,
+                            patchImageUrl = launch.patchImageUrl,
+                            windSpeed = launch.windSpeed,
+                            cloudCover = launch.cloudCover,
+                            rainfall = launch.rainfall,
+                            countdown = launch.countdown,
+                        )
+                    }
+                }
+
             LazyColumn(
                 state = listState,
                 modifier = modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.CardMargin),
                 contentPadding = contentPadding,
             ) {
-                items(
-                    items = launches,
-                    key = { launch -> launch.id },
-                ) { launch ->
+                itemsIndexed(
+                    items = launchDataList,
+                    key = { _, launchData -> launchData.id },
+                    contentType = { _, _ -> "launch_card" },
+                ) { index, launchData ->
                     SpaceXLaunchCard(
-                        launch =
-                            LaunchData(
-                                id = launch.id,
-                                name = launch.name,
-                                dateUtc = launch.dateUtc,
-                                rocketId = launch.rocketId,
-                                launchpadId = launch.launchpadId,
-                                patchImageUrl = launch.patchImageUrl,
-                                windSpeed = launch.windSpeed,
-                                cloudCover = launch.cloudCover,
-                                rainfall = launch.rainfall,
-                                countdown = launch.countdown,
-                            ),
-                        onWatchClick = { onWatchClick(launch) },
-                        onClick = { onLaunchClick(launch) },
+                        launch = launchData,
+                        onWatchClick = { onWatchClick(launches[index]) },
+                        onClick = { onLaunchClick(launches[index]) },
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
@@ -251,6 +299,26 @@ fun SpaceXLaunchListWithRefresh(
         }
 
         else -> {
+            // Memoize the LaunchData conversion to avoid recomposition
+            val launchDataList =
+                remember(launches) {
+                    launches.map { launch ->
+                        LaunchData(
+                            id = launch.id,
+                            name = launch.name,
+                            date = launch.date,
+                            time = launch.time,
+                            rocketId = launch.rocketId,
+                            launchpadId = launch.launchpadId,
+                            patchImageUrl = launch.patchImageUrl,
+                            windSpeed = launch.windSpeed,
+                            cloudCover = launch.cloudCover,
+                            rainfall = launch.rainfall,
+                            countdown = launch.countdown,
+                        )
+                    }
+                }
+
             Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
                     state = listState,
@@ -258,26 +326,15 @@ fun SpaceXLaunchListWithRefresh(
                     verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.CardMargin),
                     contentPadding = PaddingValues(SpaceXSpacing.HeaderPadding),
                 ) {
-                    items(
-                        items = launches,
-                        key = { launch -> launch.id },
-                    ) { launch ->
+                    itemsIndexed(
+                        items = launchDataList,
+                        key = { _, launchData -> launchData.id },
+                        contentType = { _, _ -> "launch_card" },
+                    ) { index, launchData ->
                         SpaceXLaunchCard(
-                            launch =
-                                LaunchData(
-                                    id = launch.id,
-                                    name = launch.name,
-                                    dateUtc = launch.dateUtc,
-                                    rocketId = launch.rocketId,
-                                    launchpadId = launch.launchpadId,
-                                    patchImageUrl = launch.patchImageUrl,
-                                    windSpeed = launch.windSpeed,
-                                    cloudCover = launch.cloudCover,
-                                    rainfall = launch.rainfall,
-                                    countdown = launch.countdown,
-                                ),
-                            onWatchClick = { onWatchClick(launch) },
-                            onClick = { onLaunchClick(launch) },
+                            launch = launchData,
+                            onWatchClick = { onWatchClick(launches[index]) },
+                            onClick = { onLaunchClick(launches[index]) },
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
@@ -309,8 +366,28 @@ fun SpaceXLaunchListWithPagination(
     paginationConfig: PaginationConfig,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(SpaceXSpacing.HeaderPadding),
+    hasError: Boolean = false,
 ) {
     val listState = rememberLazyListState()
+
+    val launchDataList =
+        remember(launches) {
+            launches.map { launch ->
+                LaunchData(
+                    id = launch.id,
+                    name = launch.name,
+                    date = launch.date,
+                    time = launch.time,
+                    rocketId = launch.rocketId,
+                    launchpadId = launch.launchpadId,
+                    patchImageUrl = launch.patchImageUrl,
+                    windSpeed = launch.windSpeed,
+                    cloudCover = launch.cloudCover,
+                    rainfall = launch.rainfall,
+                    countdown = launch.countdown,
+                )
+            }
+        }
 
     LazyColumn(
         state = listState,
@@ -318,26 +395,15 @@ fun SpaceXLaunchListWithPagination(
         verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.CardMargin),
         contentPadding = contentPadding,
     ) {
-        items(
-            items = launches,
-            key = { launch -> launch.id },
-        ) { launch ->
+        itemsIndexed(
+            items = launchDataList,
+            key = { _, launchData -> launchData.id },
+            contentType = { _, _ -> "launch_card" },
+        ) { index, launchData ->
             SpaceXLaunchCard(
-                launch =
-                    LaunchData(
-                        id = launch.id,
-                        name = launch.name,
-                        dateUtc = launch.dateUtc,
-                        rocketId = launch.rocketId,
-                        launchpadId = launch.launchpadId,
-                        patchImageUrl = launch.patchImageUrl,
-                        windSpeed = launch.windSpeed,
-                        cloudCover = launch.cloudCover,
-                        rainfall = launch.rainfall,
-                        countdown = launch.countdown,
-                    ),
-                onWatchClick = { onWatchClick(launch) },
-                onClick = { onLaunchClick(launch) },
+                launch = launchData,
+                onWatchClick = { onWatchClick(launches[index]) },
+                onClick = { onLaunchClick(launches[index]) },
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -359,7 +425,7 @@ fun SpaceXLaunchListWithPagination(
             }
         }
 
-        if (paginationConfig.hasMoreItems && !paginationConfig.isLoadingMore) {
+        if (paginationConfig.hasMoreItems && !paginationConfig.isLoadingMore && !hasError && launches.isNotEmpty()) {
             item {
                 Box(
                     modifier =
@@ -379,17 +445,20 @@ fun SpaceXLaunchListWithPagination(
         }
     }
 
-    // Auto-load more when near bottom
+    // Auto-load more when reaching the very end of the list
     LaunchedEffect(listState) {
-        if (paginationConfig.hasMoreItems && !paginationConfig.isLoadingMore) {
-            val lastVisibleIndex =
-                listState.layoutInfo.visibleItemsInfo
-                    .lastOrNull()
-                    ?.index ?: 0
-            val totalItems = launches.size
-
-            if (lastVisibleIndex >= totalItems - SpaceXSpacing.PaginationLoadMoreThreshold) {
-                paginationConfig.onLoadMore()
+        snapshotFlow {
+            listState.layoutInfo.visibleItemsInfo
+                .lastOrNull()
+                ?.index
+        }.collect { lastVisibleIndex ->
+            if (paginationConfig.hasMoreItems && !paginationConfig.isLoadingMore) {
+                val totalItems = launches.size
+                
+                // Only trigger when reaching the very last item (index = totalItems - 1)
+                if (lastVisibleIndex != null && lastVisibleIndex >= totalItems - 1) {
+                    paginationConfig.onLoadMore()
+                }
             }
         }
     }
@@ -404,7 +473,11 @@ fun SpaceXLaunchListFiltered(
     modifier: Modifier = Modifier,
     emptyMessage: String = "No launches match your criteria",
 ) {
-    val filteredLaunches = launches.filter(filter)
+    // Memoize the filtered list to avoid recomputation on every recomposition
+    val filteredLaunches =
+        remember(launches, filter) {
+            launches.filter(filter)
+        }
 
     if (filteredLaunches.isEmpty()) {
         SpaceXEmptyState(
@@ -432,7 +505,11 @@ fun SpaceXLaunchListSection(
     maxItems: Int? = null,
     emptyMessage: String = "No launches available",
 ) {
-    val displayLaunches = maxItems?.let { launches.take(it) } ?: launches
+    // Memoize the display launches to avoid recomputation
+    val displayLaunches =
+        remember(launches, maxItems) {
+            maxItems?.let { launches.take(it) } ?: launches
+        }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -467,7 +544,8 @@ private fun SpaceXLaunchListPreview() {
                     LaunchListItem(
                         id = "1",
                         name = "Starlink Group 2-38",
-                        dateUtc = "Oct/4/2025     10:00",
+                        date = "Oct/4/2025",
+                        time = "10:00",
                         rocketId = "Falcon 9",
                         launchpadId = "SLC-40",
                         patchImageUrl = null,
@@ -479,7 +557,8 @@ private fun SpaceXLaunchListPreview() {
                     LaunchListItem(
                         id = "2",
                         name = "Falcon Heavy Demo",
-                        dateUtc = "Nov/15/2025   14:30",
+                        date = "Nov/15/2025",
+                        time = "14:30",
                         rocketId = "Falcon Heavy",
                         launchpadId = "KSC LC-39A",
                         patchImageUrl = "https://images2.imgbox.com/94/f2/NN6z45OK_o.png",
@@ -527,7 +606,8 @@ private fun SpaceXLaunchListSectionPreview() {
                     LaunchListItem(
                         id = "1",
                         name = "Starlink Group 2-38",
-                        dateUtc = "Oct/4/2025     10:00",
+                        date = "Oct/4/2025",
+                        time = "10:00",
                         rocketId = "Falcon 9",
                         launchpadId = "SLC-40",
                         countdown = "89min",
@@ -565,7 +645,8 @@ private fun SpaceXLaunchListWithPaginationPreview() {
                     LaunchListItem(
                         id = "1",
                         name = "Starlink Group 2-38",
-                        dateUtc = "Oct/4/2025     10:00",
+                        date = "Oct/4/2025",
+                        time = "10:00",
                         rocketId = "Falcon 9",
                         launchpadId = "SLC-40",
                         countdown = "89min",
@@ -579,6 +660,7 @@ private fun SpaceXLaunchListWithPaginationPreview() {
                     hasMoreItems = true,
                     onLoadMore = { },
                 ),
+            hasError = false,
         )
     }
 }
@@ -593,7 +675,8 @@ private fun SpaceXLaunchListFilteredPreview() {
                     LaunchListItem(
                         id = "1",
                         name = "Starlink Group 2-38",
-                        dateUtc = "Oct/4/2025     10:00",
+                        date = "Oct/4/2025",
+                        time = "10:00",
                         rocketId = "Falcon 9",
                         launchpadId = "SLC-40",
                         countdown = "89min",
@@ -601,7 +684,8 @@ private fun SpaceXLaunchListFilteredPreview() {
                     LaunchListItem(
                         id = "2",
                         name = "Falcon Heavy Demo",
-                        dateUtc = "Nov/15/2025   14:30",
+                        date = "Nov/15/2025",
+                        time = "14:30",
                         rocketId = "Falcon Heavy",
                         launchpadId = "KSC LC-39A",
                         countdown = "2h 15min",

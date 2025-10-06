@@ -1,5 +1,8 @@
 package com.linkjf.spacex.launch.home.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Rocket(
     val id: String,
     val name: String,
@@ -25,6 +28,7 @@ data class Rocket(
     val description: String,
 )
 
+@Serializable
 data class Launchpad(
     val id: String,
     val name: String,
@@ -42,6 +46,7 @@ data class Launchpad(
     val details: String,
 )
 
+@Serializable
 data class Core(
     val core: String,
     val flight: Int,
@@ -54,6 +59,7 @@ data class Core(
     val landpad: String? = null,
 )
 
+@Serializable
 data class Fairings(
     val reused: Boolean? = null,
     val recoveryAttempt: Boolean? = null,
@@ -61,16 +67,19 @@ data class Fairings(
     val ships: List<String>,
 )
 
+@Serializable
 data class Dimension(
     val meters: Double? = null,
     val feet: Double? = null,
 )
 
+@Serializable
 data class Mass(
     val kg: Int,
     val lb: Int,
 )
 
+@Serializable
 data class PayloadWeight(
     val id: String,
     val name: String,
@@ -78,16 +87,19 @@ data class PayloadWeight(
     val lb: Int,
 )
 
+@Serializable
 data class Thrust(
     val kN: Int,
     val lbf: Int,
 )
 
+@Serializable
 data class Isp(
     val seaLevel: Int,
     val vacuum: Int,
 )
 
+@Serializable
 data class Stage(
     val reusable: Boolean,
     val engines: Int,
@@ -97,6 +109,7 @@ data class Stage(
     val thrustVacuum: Thrust,
 )
 
+@Serializable
 data class Engine(
     val isp: Isp,
     val thrustSeaLevel: Thrust,
@@ -111,6 +124,7 @@ data class Engine(
     val thrustToWeight: Double,
 )
 
+@Serializable
 data class LandingLegs(
     val number: Int,
     val material: String? = null,

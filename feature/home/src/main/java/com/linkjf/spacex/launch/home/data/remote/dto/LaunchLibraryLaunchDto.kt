@@ -112,7 +112,7 @@ data class LaunchImageDto(
     @SerialName("single_use")
     val singleUse: Boolean? = null,
     @SerialName("variants")
-    val variants: List<String>? = null,
+    val variants: List<ImageVariantDto>? = null,
 )
 
 @Serializable
@@ -125,6 +125,22 @@ data class ImageLicenseDto(
     val priority: Int? = null,
     @SerialName("link")
     val link: String? = null,
+)
+
+@Serializable
+data class ImageVariantDto(
+    @SerialName("id")
+    val id: Int,
+    @SerialName("type")
+    val type: ImageVariantTypeDto,
+)
+
+@Serializable
+data class ImageVariantTypeDto(
+    @SerialName("id")
+    val id: Int,
+    @SerialName("name")
+    val name: String,
 )
 
 @Serializable

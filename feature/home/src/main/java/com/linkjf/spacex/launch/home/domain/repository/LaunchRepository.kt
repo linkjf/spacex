@@ -1,9 +1,16 @@
 package com.linkjf.spacex.launch.home.domain.repository
 
-import com.linkjf.spacex.launch.home.domain.model.Launch
+import com.linkjf.spacex.launch.home.domain.model.PaginatedLaunches
+import kotlinx.coroutines.flow.Flow
 
 interface LaunchRepository {
-    suspend fun getUpcomingLaunches(): Result<List<Launch>>
+    fun getUpcomingLaunches(
+        limit: Int = 20,
+        offset: Int = 0,
+    ): Flow<Result<PaginatedLaunches>>
 
-    suspend fun getPastLaunches(): Result<List<Launch>>
+    fun getPastLaunches(
+        limit: Int = 20,
+        offset: Int = 0,
+    ): Flow<Result<PaginatedLaunches>>
 }

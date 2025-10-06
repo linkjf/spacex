@@ -1,27 +1,22 @@
 package com.linkjf.spacex.launch.designsystem.theme
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.linkjf.spacex.launch.designsystem.R
 
 object SpaceXIcons {
-    // Navigation Icons
     val Search: ImageVector = Icons.Default.Search
-    val PlayCircle: ImageVector = Icons.Default.PlayCircle
-
-    // Weather Icons
-    val Wind: ImageVector = Icons.Default.Air
-    val Clouds: ImageVector = Icons.Default.Cloud
-    val Rain: ImageVector = Icons.Default.WaterDrop
+    val PlayVideo: ImageVector
+        @Composable get() = ImageVector.vectorResource(id = R.drawable.ic_play_video)
+    val Wind: ImageVector
+        @Composable get() = ImageVector.vectorResource(id = R.drawable.ic_air_condition)
+    val Clouds: ImageVector
+        @Composable get() = ImageVector.vectorResource(id = R.drawable.ic_cloud_condition)
+    val Rain: ImageVector
+        @Composable get() = ImageVector.vectorResource(id = R.drawable.ic_rain_condition)
     val Sun: ImageVector = Icons.Default.WbSunny
-
-    // Custom Icons (to be added when we have custom vector assets)
-    // val SpaceXLogo: ImageVector = ...
-    // val Rocket: ImageVector = ...
-    // val LaunchPad: ImageVector = ...
 }

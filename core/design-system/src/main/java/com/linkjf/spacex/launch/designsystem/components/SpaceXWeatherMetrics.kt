@@ -36,7 +36,7 @@ fun SpaceXWeatherMetrics(
     iconColor: Color = SpaceXColors.OnSurface,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium2),
     ) {
         metrics.forEach { metric ->
@@ -73,6 +73,41 @@ fun SpaceXWeatherMetrics(
 }
 
 @Composable
+fun SpaceXWeatherMetric(
+    value: String,
+    label: String,
+    icon: ImageVector? = null,
+    modifier: Modifier = Modifier,
+    textColor: Color = SpaceXColors.OnSurface,
+    iconColor: Color = SpaceXColors.OnSurface,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
+    ) {
+        icon?.let { imageVector ->
+            Icon(
+                imageVector = imageVector,
+                contentDescription = label,
+                tint = iconColor,
+                modifier = Modifier.size(SpaceXSpacing.IconSmall),
+            )
+        }
+        Text(
+            text = label,
+            style = SpaceXTypography.weatherMetric,
+            color = textColor,
+        )
+        Text(
+            text = value,
+            style = SpaceXTypography.weatherMetric,
+            color = textColor,
+        )
+    }
+}
+
+@Composable
 fun SpaceXWeatherMetricsRow(
     windSpeed: String,
     cloudCover: String,
@@ -85,68 +120,24 @@ fun SpaceXWeatherMetricsRow(
     rainLabel: String = stringResource(R.string.weather_metrics_rain_label),
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium2),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
-        ) {
-            Icon(
-                imageVector = SpaceXIcons.Wind,
-                contentDescription = windLabel,
-                tint = iconColor,
-                modifier = Modifier.size(SpaceXSpacing.IconSmall),
-            )
-            Text(
-                text = windLabel,
-                style = SpaceXTypography.weatherMetric,
-                color = textColor,
-            )
-            Text(
-                text = windSpeed,
-                style = SpaceXTypography.weatherMetric,
-                color = textColor,
-            )
-        }
+        SpaceXWeatherMetric(
+            value = windSpeed,
+            label = windLabel,
+            icon = SpaceXIcons.Wind,
+            textColor = textColor,
+            iconColor = iconColor,
+        )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
-        ) {
-            Text(
-                text = cloudsLabel,
-                style = SpaceXTypography.weatherMetric,
-                color = textColor,
-            )
-            Text(
-                text = cloudCover,
-                style = SpaceXTypography.weatherMetric,
-                color = textColor,
-            )
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
-        ) {
-            Icon(
-                imageVector = SpaceXIcons.Rain,
-                contentDescription = rainLabel,
-                tint = iconColor,
-                modifier = Modifier.size(SpaceXSpacing.IconSmall),
-            )
-            Text(
-                text = rainLabel,
-                style = SpaceXTypography.weatherMetric,
-                color = textColor,
-            )
-            Text(
-                text = rainfall,
-                style = SpaceXTypography.weatherMetric,
-                color = textColor,
-            )
-        }
+        SpaceXWeatherMetric(
+            value = cloudCover,
+            label = cloudsLabel,
+            icon = SpaceXIcons.Clouds,
+            textColor = textColor,
+            iconColor = iconColor,
+        )
     }
 }
 

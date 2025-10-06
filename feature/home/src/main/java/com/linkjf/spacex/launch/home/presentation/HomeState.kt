@@ -17,6 +17,11 @@ data class HomeState(
     val allRockets: Map<String, Rocket> = emptyMap(),
     val allLaunchpads: Map<String, Launchpad> = emptyMap(),
     val errorMessage: String? = null,
+    val rateLimitError: RateLimitError? = null,
+    val hasMoreItems: Boolean = true,
+    val currentPage: Int = 1,
+    val pageSize: Int = 20,
+    val totalCount: Int = 0,
 )
 
 /**
@@ -26,3 +31,11 @@ enum class LaunchFilter {
     UPCOMING,
     PACK,
 }
+
+/**
+ * Represents a rate limit error with retry information
+ */
+data class RateLimitError(
+    val retryAfterSeconds: Int? = null,
+    val message: String = "Rate limit exceeded. Please try again later.",
+)

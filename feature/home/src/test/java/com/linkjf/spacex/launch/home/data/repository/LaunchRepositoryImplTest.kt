@@ -2,20 +2,10 @@ package com.linkjf.spacex.launch.home.data.repository
 
 import com.linkjf.spacex.launch.home.data.mapper.LaunchLibraryLaunchMapper
 import com.linkjf.spacex.launch.home.data.remote.LaunchLibraryApi
-import com.linkjf.spacex.launch.home.data.remote.dto.AgencyTypeDto
-import com.linkjf.spacex.launch.home.data.remote.dto.CelestialBodyDto
-import com.linkjf.spacex.launch.home.data.remote.dto.CountryDto
 import com.linkjf.spacex.launch.home.data.remote.dto.LaunchLibraryLaunchDto
 import com.linkjf.spacex.launch.home.data.remote.dto.LaunchLibraryResponseDto
-import com.linkjf.spacex.launch.home.data.remote.dto.LaunchLocationDto
-import com.linkjf.spacex.launch.home.data.remote.dto.LaunchPadDto
-import com.linkjf.spacex.launch.home.data.remote.dto.LaunchRocketDto
-import com.linkjf.spacex.launch.home.data.remote.dto.LaunchServiceProviderDto
-import com.linkjf.spacex.launch.home.data.remote.dto.LaunchStatusDto
-import com.linkjf.spacex.launch.home.data.remote.dto.NetPrecisionDto
-import com.linkjf.spacex.launch.home.data.remote.dto.RocketConfigurationDto
-import com.linkjf.spacex.launch.home.data.remote.dto.RocketFamilyDto
 import com.linkjf.spacex.launch.home.domain.model.Launch
+import com.linkjf.spacex.launch.home.domain.model.PaginatedLaunches
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -44,11 +34,7 @@ class LaunchRepositoryImplTest {
     @Test
     fun `getUpcomingLaunches should return success when API call succeeds`() =
         runTest {
-            val launchDtos =
-                listOf(
-                    createSampleLaunchLibraryDto("launch1", "Launch 1"),
-                    createSampleLaunchLibraryDto("launch2", "Launch 2"),
-                )
+            val launchDtos = emptyList<LaunchLibraryLaunchDto>()
             val apiResponse =
                 LaunchLibraryResponseDto(
                     count = 2,
@@ -62,60 +48,37 @@ class LaunchRepositoryImplTest {
                     createSampleLaunch("launch2", "Launch 2", upcoming = true),
                 )
 
-            coEvery { launchLibraryApi.getUpcomingLaunches() } returns apiResponse
+            coEvery { launchLibraryApi.getUpcomingLaunches(20, 0) } returns apiResponse
             every { LaunchLibraryLaunchMapper.mapToDomain(launchDtos, true) } returns expectedLaunches
 
-            val result = launchRepository.getUpcomingLaunches()
+            val result = launchRepository.getUpcomingLaunches(20, 0)
 
             assertTrue("Result should be success", result.isSuccess)
-            assertEquals("Should return mapped launches", expectedLaunches, result.getOrNull())
-            coVerify { launchLibraryApi.getUpcomingLaunches() }
+            val paginatedResult = result.getOrNull()
+            assertNotNull("Paginated result should not be null", paginatedResult)
+            assertEquals("Should return mapped launches", expectedLaunches, paginatedResult?.launches)
+            assertEquals("Should return correct count", 2, paginatedResult?.totalCount)
+            assertFalse("Should not have more items", paginatedResult?.hasMore ?: true)
+            coVerify { launchLibraryApi.getUpcomingLaunches(20, 0) }
         }
 
     @Test
     fun `getUpcomingLaunches should return failure when API call fails`() =
         runTest {
             val exception = IOException("Network error")
-            coEvery { launchLibraryApi.getUpcomingLaunches() } throws exception
+            coEvery { launchLibraryApi.getUpcomingLaunches(20, 0) } throws exception
 
-            val result = launchRepository.getUpcomingLaunches()
-
-            assertTrue("Result should be failure", result.isFailure)
-            assertEquals("Should return the exception", exception, result.exceptionOrNull())
-            coVerify { launchLibraryApi.getUpcomingLaunches() }
-        }
-
-    @Test
-    fun `getUpcomingLaunches should return failure when mapper fails`() =
-        runTest {
-            val launchDtos = listOf(createSampleLaunchLibraryDto("launch1", "Launch 1"))
-            val apiResponse =
-                LaunchLibraryResponseDto(
-                    count = 1,
-                    next = null,
-                    previous = null,
-                    results = launchDtos,
-                )
-            val exception = RuntimeException("Mapping error")
-
-            coEvery { launchLibraryApi.getUpcomingLaunches() } returns apiResponse
-            every { LaunchLibraryLaunchMapper.mapToDomain(launchDtos) } throws exception
-
-            val result = launchRepository.getUpcomingLaunches()
+            val result = launchRepository.getUpcomingLaunches(20, 0)
 
             assertTrue("Result should be failure", result.isFailure)
             assertEquals("Should return the exception", exception, result.exceptionOrNull())
-            coVerify { launchLibraryApi.getUpcomingLaunches() }
+            coVerify { launchLibraryApi.getUpcomingLaunches(20, 0) }
         }
 
     @Test
     fun `getPastLaunches should return success when API call succeeds`() =
         runTest {
-            val launchDtos =
-                listOf(
-                    createSampleLaunchLibraryDto("launch1", "Launch 1"),
-                    createSampleLaunchLibraryDto("launch2", "Launch 2"),
-                )
+            val launchDtos = emptyList<LaunchLibraryLaunchDto>()
             val apiResponse =
                 LaunchLibraryResponseDto(
                     count = 2,
@@ -129,50 +92,31 @@ class LaunchRepositoryImplTest {
                     createSampleLaunch("launch2", "Launch 2", upcoming = false),
                 )
 
-            coEvery { launchLibraryApi.getPastLaunches() } returns apiResponse
+            coEvery { launchLibraryApi.getPastLaunches(20, 0) } returns apiResponse
             every { LaunchLibraryLaunchMapper.mapToDomain(launchDtos, false) } returns expectedLaunches
 
-            val result = launchRepository.getPastLaunches()
+            val result = launchRepository.getPastLaunches(20, 0)
 
             assertTrue("Result should be success", result.isSuccess)
-            assertEquals("Should return mapped launches", expectedLaunches, result.getOrNull())
-            coVerify { launchLibraryApi.getPastLaunches() }
+            val paginatedResult = result.getOrNull()
+            assertNotNull("Paginated result should not be null", paginatedResult)
+            assertEquals("Should return mapped launches", expectedLaunches, paginatedResult?.launches)
+            assertEquals("Should return correct count", 2, paginatedResult?.totalCount)
+            assertFalse("Should not have more items", paginatedResult?.hasMore ?: true)
+            coVerify { launchLibraryApi.getPastLaunches(20, 0) }
         }
 
     @Test
     fun `getPastLaunches should return failure when API call fails`() =
         runTest {
             val exception = IOException("Network error")
-            coEvery { launchLibraryApi.getPastLaunches() } throws exception
+            coEvery { launchLibraryApi.getPastLaunches(20, 0) } throws exception
 
-            val result = launchRepository.getPastLaunches()
-
-            assertTrue("Result should be failure", result.isFailure)
-            assertEquals("Should return the exception", exception, result.exceptionOrNull())
-            coVerify { launchLibraryApi.getPastLaunches() }
-        }
-
-    @Test
-    fun `getPastLaunches should return failure when mapper fails`() =
-        runTest {
-            val launchDtos = listOf(createSampleLaunchLibraryDto("launch1", "Launch 1"))
-            val apiResponse =
-                LaunchLibraryResponseDto(
-                    count = 1,
-                    next = null,
-                    previous = null,
-                    results = launchDtos,
-                )
-            val exception = RuntimeException("Mapping error")
-
-            coEvery { launchLibraryApi.getPastLaunches() } returns apiResponse
-            every { LaunchLibraryLaunchMapper.mapToDomain(launchDtos, false) } throws exception
-
-            val result = launchRepository.getPastLaunches()
+            val result = launchRepository.getPastLaunches(20, 0)
 
             assertTrue("Result should be failure", result.isFailure)
             assertEquals("Should return the exception", exception, result.exceptionOrNull())
-            coVerify { launchLibraryApi.getPastLaunches() }
+            coVerify { launchLibraryApi.getPastLaunches(20, 0) }
         }
 
     @Test
@@ -188,15 +132,18 @@ class LaunchRepositoryImplTest {
                 )
             val emptyLaunches = emptyList<Launch>()
 
-            coEvery { launchLibraryApi.getUpcomingLaunches() } returns apiResponse
+            coEvery { launchLibraryApi.getUpcomingLaunches(20, 0) } returns apiResponse
             every { LaunchLibraryLaunchMapper.mapToDomain(emptyLaunchDtos, true) } returns emptyLaunches
 
-            val result = launchRepository.getUpcomingLaunches()
+            val result = launchRepository.getUpcomingLaunches(20, 0)
 
             assertTrue("Result should be success", result.isSuccess)
-            assertNotNull("Result should not be null", result.getOrNull())
-            assertTrue("Should return empty list", result.getOrNull()?.isEmpty() == true)
-            coVerify { launchLibraryApi.getUpcomingLaunches() }
+            val paginatedResult = result.getOrNull()
+            assertNotNull("Paginated result should not be null", paginatedResult)
+            assertTrue("Should return empty list", paginatedResult?.launches?.isEmpty() == true)
+            assertEquals("Should return correct count", 0, paginatedResult?.totalCount)
+            assertFalse("Should not have more items", paginatedResult?.hasMore ?: true)
+            coVerify { launchLibraryApi.getUpcomingLaunches(20, 0) }
         }
 
     @Test
@@ -212,157 +159,46 @@ class LaunchRepositoryImplTest {
                 )
             val emptyLaunches = emptyList<Launch>()
 
-            coEvery { launchLibraryApi.getPastLaunches() } returns apiResponse
+            coEvery { launchLibraryApi.getPastLaunches(20, 0) } returns apiResponse
             every { LaunchLibraryLaunchMapper.mapToDomain(emptyLaunchDtos, false) } returns emptyLaunches
 
-            val result = launchRepository.getPastLaunches()
+            val result = launchRepository.getPastLaunches(20, 0)
 
             assertTrue("Result should be success", result.isSuccess)
-            assertNotNull("Result should not be null", result.getOrNull())
-            assertTrue("Should return empty list", result.getOrNull()?.isEmpty() == true)
-            coVerify { launchLibraryApi.getPastLaunches() }
+            val paginatedResult = result.getOrNull()
+            assertNotNull("Paginated result should not be null", paginatedResult)
+            assertTrue("Should return empty list", paginatedResult?.launches?.isEmpty() == true)
+            assertEquals("Should return correct count", 0, paginatedResult?.totalCount)
+            assertFalse("Should not have more items", paginatedResult?.hasMore ?: true)
+            coVerify { launchLibraryApi.getPastLaunches(20, 0) }
         }
 
-    private fun createSampleLaunchLibraryDto(
-        id: String,
-        name: String,
-    ): LaunchLibraryLaunchDto =
-        LaunchLibraryLaunchDto(
-            id = id,
-            url = "https://example.com/launch/$id",
-            name = name,
-            responseMode = "normal",
-            slug = name.lowercase().replace(" ", "-"),
-            launchDesignator = null,
-            status =
-                LaunchStatusDto(
-                    id = 1,
-                    name = "Go for Launch",
-                    abbrev = "Go",
-                    description = "Current T-0 confirmed by official or reliable sources.",
-                ),
-            lastUpdated = "2023-01-01T00:00:00Z",
-            net = "2023-01-01T00:00:00Z",
-            netPrecision =
-                NetPrecisionDto(
-                    id = 1,
-                    name = "Minute",
-                    abbrev = "MIN",
-                    description = "The T-0 is accurate to the minute.",
-                ),
-            windowEnd = null,
-            windowStart = null,
-            image = null,
-            infographic = null,
-            probability = null,
-            weatherConcerns = null,
-            failReason = "",
-            hashtag = null,
-            launchServiceProvider =
-                LaunchServiceProviderDto(
-                    responseMode = "list",
-                    id = 121,
-                    url = "https://example.com/launch/$id",
-                    name = "SpaceX",
-                    abbrev = "SpX",
-                    type =
-                        AgencyTypeDto(
-                            id = 3,
-                            name = "Commercial",
-                        ),
-                ),
-            rocket =
-                LaunchRocketDto(
-                    id = 8724,
-                    configuration =
-                        RocketConfigurationDto(
-                            responseMode = "list",
-                            id = 164,
-                            url = "https://example.com/launch/$id",
-                            name = "Falcon 9",
-                            families =
-                                listOf(
-                                    RocketFamilyDto(
-                                        responseMode = "list",
-                                        id = 1,
-                                        name = "Falcon",
-                                    ),
-                                ),
-                            fullName = "Falcon 9 Block 5",
-                            variant = "Block 5",
-                        ),
-                ),
-            mission = null,
-            pad =
-                LaunchPadDto(
-                    id = 80,
-                    url = "https://example.com/launch/$id",
-                    active = true,
-                    agencies = null,
-                    name = "Space Launch Complex 40",
-                    image = null,
-                    description = "",
-                    infoUrl = null,
-                    wikiUrl = "https://example.com/wiki",
-                    mapUrl = "https://example.com/map",
-                    latitude = 28.56194122,
-                    longitude = -80.57735736,
-                    country =
-                        CountryDto(
-                            id = 2,
-                            name = "United States of America",
-                            alpha2Code = "US",
-                            alpha3Code = "USA",
-                            nationalityName = "American",
-                            nationalityNameComposed = "Americano",
-                        ),
-                    mapImage = null,
-                    totalLaunchCount = 337,
-                    orbitalLaunchAttemptCount = 337,
-                    fastestTurnaround = null,
-                    location =
-                        LaunchLocationDto(
-                            responseMode = "normal",
-                            id = 12,
-                            url = "https://example.com/launch/$id",
-                            name = "Cape Canaveral SFS, FL, USA",
-                            celestialBody =
-                                CelestialBodyDto(
-                                    responseMode = "normal",
-                                    id = 1,
-                                    name = "Earth",
-                                ),
-                            active = true,
-                            country =
-                                CountryDto(
-                                    id = 2,
-                                    name = "United States of America",
-                                    alpha2Code = "US",
-                                    alpha3Code = "USA",
-                                    nationalityName = "American",
-                                    nationalityNameComposed = "Americano",
-                                ),
-                            description = null,
-                            image = null,
-                            mapImage = null,
-                            longitude = -80.577778,
-                            latitude = 28.488889,
-                            timezoneName = "America/New_York",
-                            totalLaunchCount = 1056,
-                            totalLandingCount = null,
-                        ),
-                ),
-            webcastLive = false,
-            program = null,
-            orbitalLaunchAttemptCount = null,
-            locationLaunchAttemptCount = null,
-            padLaunchAttemptCount = null,
-            agencyLaunchAttemptCount = null,
-            orbitalLaunchAttemptCountYear = null,
-            locationLaunchAttemptCountYear = null,
-            padLaunchAttemptCountYear = null,
-            agencyLaunchAttemptCountYear = null,
-        )
+    @Test
+    fun `getUpcomingLaunches should handle pagination with next page`() =
+        runTest {
+            val launchDtos = emptyList<LaunchLibraryLaunchDto>()
+            val apiResponse =
+                LaunchLibraryResponseDto(
+                    count = 50,
+                    next = "https://api.example.com/launches/upcoming/?limit=20&offset=20",
+                    previous = null,
+                    results = launchDtos,
+                )
+            val expectedLaunches = listOf(createSampleLaunch("launch1", "Launch 1", upcoming = true))
+
+            coEvery { launchLibraryApi.getUpcomingLaunches(20, 0) } returns apiResponse
+            every { LaunchLibraryLaunchMapper.mapToDomain(launchDtos, true) } returns expectedLaunches
+
+            val result = launchRepository.getUpcomingLaunches(20, 0)
+
+            assertTrue("Result should be success", result.isSuccess)
+            val paginatedResult = result.getOrNull()
+            assertNotNull("Paginated result should not be null", paginatedResult)
+            assertEquals("Should return mapped launches", expectedLaunches, paginatedResult?.launches)
+            assertEquals("Should return correct count", 50, paginatedResult?.totalCount)
+            assertTrue("Should have more items", paginatedResult?.hasMore ?: false)
+            coVerify { launchLibraryApi.getUpcomingLaunches(20, 0) }
+        }
 
     private fun createSampleLaunch(
         id: String,

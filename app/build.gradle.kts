@@ -110,6 +110,7 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":core:design-system"))
     implementation(project(":core:network"))
+    implementation(project(":core:database"))
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

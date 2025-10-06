@@ -28,5 +28,7 @@ sealed interface HomeAction {
 
     data object DismissError : HomeAction
 
+    data object DismissRateLimitError : HomeAction
+
     data object Retry : HomeAction
 }

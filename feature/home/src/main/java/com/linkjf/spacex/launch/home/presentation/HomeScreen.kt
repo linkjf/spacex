@@ -10,7 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.linkjf.spacex.launch.designsystem.components.LaunchListItem
-import com.linkjf.spacex.launch.designsystem.components.SpaceXLaunchList
+import com.linkjf.spacex.launch.designsystem.components.PaginationConfig
+import com.linkjf.spacex.launch.designsystem.components.SpaceXErrorCard
+import com.linkjf.spacex.launch.designsystem.components.SpaceXLaunchListWithPagination
+import com.linkjf.spacex.launch.designsystem.components.SpaceXRateLimitCard
 import com.linkjf.spacex.launch.designsystem.components.SpaceXScreenHeader
 import com.linkjf.spacex.launch.designsystem.components.SpaceXTabSelector
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
@@ -59,19 +62,38 @@ fun HomeScreen(
             },
         )
 
-        SpaceXLaunchList(
+        // Display rate limit error
+        state.rateLimitError?.let { rateLimitError ->
+            SpaceXRateLimitCard(
+                message = rateLimitError.message,
+                retryAfterSeconds = rateLimitError.retryAfterSeconds,
+                onDismiss = { viewModel.reduce(HomeAction.DismissRateLimitError) },
+            )
+        }
+
+        // Display general error message
+        state.errorMessage?.let { errorMessage ->
+            SpaceXErrorCard(
+                message = errorMessage,
+                onDismiss = { viewModel.reduce(HomeAction.DismissError) },
+            )
+        }
+
+        SpaceXLaunchListWithPagination(
             launches =
                 state.launches.map { launch ->
                     val weatherData = viewModel.generateWeatherData(launch.id)
                     val rocketName = viewModel.getRocketName(launch.rocketId)
                     val launchpadName = viewModel.getLaunchpadName(launch.launchpadId)
                     val formattedDate = viewModel.formatLaunchDate(launch.dateUtc)
+                    val formattedTime = viewModel.formatLaunchTime(launch.dateUtc)
                     val countdown = viewModel.calculateCountdown(launch.dateUtc, launch.upcoming)
 
                     LaunchListItem(
                         id = launch.id,
                         name = launch.name,
-                        dateUtc = formattedDate,
+                        date = formattedDate,
+                        time = formattedTime,
                         rocketId = rocketName,
                         launchpadId = launchpadName,
                         patchImageUrl = launch.links?.patch?.small,
@@ -84,9 +106,13 @@ fun HomeScreen(
                 },
             onLaunchClick = { launch -> viewModel.reduce(HomeAction.TapLaunch(launch.id)) },
             onWatchClick = { launch -> viewModel.reduce(HomeAction.TapWatch(launch.id)) },
-            isLoading = state.isLoading,
-            isEmpty = state.launches.isEmpty() && !state.isLoading,
-            emptyMessage = "No launches available",
+            paginationConfig =
+                PaginationConfig(
+                    isLoadingMore = state.isLoadingMore,
+                    hasMoreItems = state.hasMoreItems,
+                    onLoadMore = { viewModel.reduce(HomeAction.LoadMore) },
+                ),
+            hasError = state.errorMessage != null || state.rateLimitError != null,
         )
     }
 }
@@ -101,7 +127,8 @@ private fun HomeScreenPreview() {
                     LaunchListItem(
                         id = "launch_1",
                         name = "Starlink Group 2-38",
-                        dateUtc = "Oct/4/2025     10:00",
+                        date = "Oct/4/2025",
+                        time = "10:00",
                         rocketId = "Falcon 4",
                         launchpadId = "LCS-421",
                         patchImageUrl = null,
@@ -114,7 +141,8 @@ private fun HomeScreenPreview() {
                     LaunchListItem(
                         id = "launch_2",
                         name = "Starlink Group 2-39",
-                        dateUtc = "Oct/6/2025     14:30",
+                        date = "Oct/6/2025",
+                        time = "14:30",
                         rocketId = "Falcon 9",
                         launchpadId = "SLC-40",
                         patchImageUrl = "https://example.com/image2.jpg",
@@ -127,7 +155,8 @@ private fun HomeScreenPreview() {
                     LaunchListItem(
                         id = "launch_3",
                         name = "Falcon Heavy Demo",
-                        dateUtc = "Oct/8/2025     16:00",
+                        date = "Oct/8/2025",
+                        time = "16:00",
                         rocketId = "Falcon Heavy",
                         launchpadId = "KSC LC-39A",
                         patchImageUrl = null,
@@ -154,7 +183,8 @@ private fun HomeScreenPackTabPreview() {
                     LaunchListItem(
                         id = "launch_4",
                         name = "Starlink Group 1-45",
-                        dateUtc = "Sep/28/2025   12:00",
+                        date = "Sep/28/2025",
+                        time = "12:00",
                         rocketId = "Falcon 9",
                         launchpadId = "SLC-40",
                         patchImageUrl = "https://example.com/image2.jpg",
@@ -218,13 +248,16 @@ private fun HomeScreenPreviewContent(
             onTabSelected = { },
         )
 
-        SpaceXLaunchList(
+        SpaceXLaunchListWithPagination(
             launches = launches,
             onLaunchClick = { },
             onWatchClick = { },
-            isLoading = isLoading,
-            isEmpty = launches.isEmpty() && !isLoading,
-            emptyMessage = "No launches available",
+            paginationConfig =
+                PaginationConfig(
+                    isLoadingMore = false,
+                    hasMoreItems = true,
+                    onLoadMore = { },
+                ),
         )
     }
 }

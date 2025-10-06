@@ -2,11 +2,15 @@ package com.linkjf.spacex.launch.home.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.linkjf.spacex.launch.home.domain.model.Launchpad
+import com.linkjf.spacex.launch.home.domain.model.PaginatedLaunches
 import com.linkjf.spacex.launch.home.domain.model.Rocket
 import com.linkjf.spacex.launch.home.domain.usecase.GetPastLaunchesUseCase
 import com.linkjf.spacex.launch.home.domain.usecase.GetUpcomingLaunchesUseCase
 import com.linkjf.spacex.launch.mvi.StateViewModel
+import com.linkjf.spacex.launch.network.exceptions.HttpException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -43,6 +47,7 @@ class HomeViewModel
                 is HomeAction.TapWatch -> handleWatchAction(action.launchId)
 
                 HomeAction.DismissError -> dismissError()
+                HomeAction.DismissRateLimitError -> dismissRateLimitError()
                 HomeAction.Retry -> retry()
             }
         }
@@ -51,7 +56,39 @@ class HomeViewModel
             if (state.value.launches.isNotEmpty()) return
 
             state.value.copy(isLoading = true).sendToState()
-            loadAllData()
+
+            // Load rocket and launchpad data first, then load launches
+            viewModelScope.launch {
+                // Load all data for rocket/launchpad mapping
+                getUpcomingLaunches(20, 0)
+                    .onEach { result ->
+                        result.fold(
+                            onSuccess = { paginatedLaunches ->
+                                // Process upcoming launches for mapping
+                                processLaunchesForMapping(paginatedLaunches.launches, isUpcoming = true)
+                            },
+                            onFailure = { error ->
+                                handleError(error)
+                            },
+                        )
+                    }.launchIn(viewModelScope)
+
+                getPastLaunches(20, 0)
+                    .onEach { result ->
+                        result.fold(
+                            onSuccess = { paginatedLaunches ->
+                                // Process past launches for mapping
+                                processLaunchesForMapping(paginatedLaunches.launches, isUpcoming = false)
+
+                                // After processing both, load the first page of launches
+                                loadLaunches()
+                            },
+                            onFailure = { error ->
+                                handleError(error)
+                            },
+                        )
+                    }.launchIn(viewModelScope)
+            }
         }
 
         private fun selectTab(tabIndex: Int) {
@@ -68,6 +105,8 @@ class HomeViewModel
                     selectedTabIndex = if (filter == LaunchFilter.UPCOMING) 0 else 1,
                     launches = emptyList(),
                     isLoading = true,
+                    currentPage = 1,
+                    hasMoreItems = true,
                 ).sendToState()
 
             loadLaunches()
@@ -87,14 +126,48 @@ class HomeViewModel
         }
 
         private fun loadMore() {
-            if (state.value.isLoadingMore || state.value.launches.isEmpty()) return
+            if (state.value.isLoadingMore || !state.value.hasMoreItems || state.value.launches.isEmpty()) return
 
             state.value.copy(isLoadingMore = true).sendToState()
 
-            viewModelScope.launch {
-                kotlinx.coroutines.delay(1000)
-                state.value.copy(isLoadingMore = false).sendToState()
-            }
+            val nextPage = state.value.currentPage + 1
+            val offset = (nextPage - 1) * state.value.pageSize
+
+            val flow =
+                when (state.value.selectedFilter) {
+                    LaunchFilter.UPCOMING -> getUpcomingLaunches(state.value.pageSize, offset)
+                    LaunchFilter.PACK -> getPastLaunches(state.value.pageSize, offset)
+                }
+
+            flow
+                .onEach { result ->
+                    result.fold(
+                        onSuccess = { paginatedLaunches ->
+                            val currentLaunches = state.value.launches
+                            val updatedLaunches = currentLaunches + paginatedLaunches.launches
+
+                            state.value
+                                .copy(
+                                    launches = updatedLaunches,
+                                    isLoadingMore = false,
+                                    currentPage = nextPage,
+                                    hasMoreItems = paginatedLaunches.hasMore,
+                                    totalCount = paginatedLaunches.totalCount,
+                                    errorMessage = null,
+                                    rateLimitError = null,
+                                ).sendToState()
+                        },
+                        onFailure = { error ->
+                            state.value
+                                .copy(
+                                    isLoadingMore = false,
+                                    errorMessage = getErrorMessage(error),
+                                    rateLimitError = null,
+                                ).sendToState()
+                            handleError(error)
+                        },
+                    )
+                }.launchIn(viewModelScope)
         }
 
         private fun handleWatchAction(launchId: String) {
@@ -120,130 +193,115 @@ class HomeViewModel
             state.value.copy(errorMessage = null).sendToState()
         }
 
+        private fun dismissRateLimitError() {
+            state.value.copy(rateLimitError = null).sendToState()
+        }
+
         private fun retry() {
             dismissError()
             loadInitialData()
         }
 
-        private fun loadAllData() {
-            viewModelScope.launch {
-                try {
-                    val upcomingResult = getUpcomingLaunches()
-                    val pastResult = getPastLaunches()
+        private fun processLaunchesForMapping(
+            launches: List<com.linkjf.spacex.launch.home.domain.model.Launch>,
+            isUpcoming: Boolean,
+        ) {
+            val allRockets = state.value.allRockets.toMutableMap()
+            val allLaunchpads = state.value.allLaunchpads.toMutableMap()
 
-                    val upcomingLaunches = upcomingResult.getOrElse { emptyList() }
-                    val pastLaunches = pastResult.getOrElse { emptyList() }
-
-                    val allRockets = mutableMapOf<String, Rocket>()
-                    val allLaunchpads = mutableMapOf<String, Launchpad>()
-
-                    (upcomingLaunches + pastLaunches).forEach { launch ->
-                        launch.rocket?.let { rocket ->
-                            allRockets[rocket.id] = rocket
-                        }
-                        launch.launchpad?.let { launchpad ->
-                            allLaunchpads[launchpad.id] = launchpad
-                        }
-                    }
-
-                    println("DEBUG: Extracted ${allRockets.size} rockets from embedded data: ${allRockets.keys}")
-                    println("DEBUG: Extracted ${allLaunchpads.size} launchpads from embedded data: ${allLaunchpads.keys}")
-
-                    state.value
-                        .copy(
-                            allRockets = allRockets,
-                            allLaunchpads = allLaunchpads,
-                        ).sendToState()
-
-                    val launchesToShow =
-                        when (state.value.selectedFilter) {
-                            LaunchFilter.UPCOMING -> upcomingLaunches
-                            LaunchFilter.PACK -> pastLaunches
-                        }
-
-                    println("DEBUG: Loaded ${launchesToShow.size} launches for ${state.value.selectedFilter}")
-                    launchesToShow.take(3).forEach { launch ->
-                        println("DEBUG: Launch ${launch.name} - Rocket ID: ${launch.rocketId}, Launchpad ID: ${launch.launchpadId}")
-                    }
-
-                    state.value
-                        .copy(
-                            launches = launchesToShow,
-                            isLoading = false,
-                            errorMessage = null,
-                        ).sendToState()
-                } catch (e: Exception) {
-                    state.value
-                        .copy(
-                            isLoading = false,
-                            errorMessage = e.message ?: "Failed to load initial data",
-                        ).sendToState()
-                    HomeEvent.ShowError(e.message ?: "Failed to load initial data").sendToEvent()
+            launches.forEach { launch ->
+                launch.rocket?.let { rocket ->
+                    allRockets[rocket.id] = rocket
+                }
+                launch.launchpad?.let { launchpad ->
+                    allLaunchpads[launchpad.id] = launchpad
                 }
             }
+
+            state.value
+                .copy(
+                    allRockets = allRockets,
+                    allLaunchpads = allLaunchpads,
+                ).sendToState()
         }
 
         private fun loadLaunches() {
-            viewModelScope.launch {
-                try {
-                    val result =
-                        when (state.value.selectedFilter) {
-                            LaunchFilter.UPCOMING -> getUpcomingLaunches()
-                            LaunchFilter.PACK -> getPastLaunches()
-                        }
+            val flow =
+                when (state.value.selectedFilter) {
+                    LaunchFilter.UPCOMING -> getUpcomingLaunches(state.value.pageSize, 0)
+                    LaunchFilter.PACK -> getPastLaunches(state.value.pageSize, 0)
+                }
 
+            flow
+                .onEach { result ->
                     result.fold(
-                        onSuccess = { launches ->
-
-                            println("DEBUG: Loaded ${launches.size} launches")
-                            launches.take(3).forEach { launch ->
+                        onSuccess = { paginatedLaunches ->
+                            println("DEBUG: Loaded ${paginatedLaunches.launches.size} launches")
+                            paginatedLaunches.launches.take(3).forEach { launch ->
                                 println("DEBUG: Launch ${launch.name} - Rocket ID: ${launch.rocketId}, Launchpad ID: ${launch.launchpadId}")
                             }
 
                             state.value
                                 .copy(
-                                    launches = launches,
+                                    launches = paginatedLaunches.launches,
                                     isLoading = false,
+                                    currentPage = 1,
+                                    hasMoreItems = paginatedLaunches.hasMore,
+                                    totalCount = paginatedLaunches.totalCount,
                                     errorMessage = null,
+                                    rateLimitError = null,
                                 ).sendToState()
                         },
                         onFailure = { error ->
                             state.value
                                 .copy(
                                     isLoading = false,
-                                    errorMessage = error.message ?: "Failed to load launches",
+                                    errorMessage = getErrorMessage(error),
+                                    rateLimitError = null,
                                 ).sendToState()
-                            HomeEvent
-                                .ShowError(error.message ?: "Failed to load launches")
-                                .sendToEvent()
+                            handleError(error)
                         },
                     )
-                } catch (e: Exception) {
-                    state.value
-                        .copy(
-                            isLoading = false,
-                            errorMessage = e.message ?: "An unexpected error occurred",
-                        ).sendToState()
-                    HomeEvent.ShowError(e.message ?: "An unexpected error occurred").sendToEvent()
-                }
-            }
+                }.launchIn(viewModelScope)
         }
 
         fun formatLaunchDate(dateUtc: String): String =
             try {
                 val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
-                val outputFormat = SimpleDateFormat("MMM/dd/yyyy   HH:mm", Locale.getDefault())
+                val outputFormat = SimpleDateFormat("MMM/dd/yyyy", Locale.getDefault())
                 val date = inputFormat.parse(dateUtc)
                 outputFormat.format(date ?: Date())
             } catch (e: Exception) {
                 try {
                     val inputFormatMs =
                         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-                    val outputFormat = SimpleDateFormat("MMM/dd/yyyy   HH:mm", Locale.getDefault())
+                    val outputFormat = SimpleDateFormat("MMM/dd/yyyy", Locale.getDefault())
                     val date = inputFormatMs.parse(dateUtc)
                     outputFormat.format(date ?: Date())
                 } catch (e2: Exception) {
-                    dateUtc
+                    dateUtc.split("T")[0] // Fallback to just the date part
+                }
+            }
+
+        fun formatLaunchTime(dateUtc: String): String =
+            try {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+                val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val date = inputFormat.parse(dateUtc)
+                outputFormat.format(date ?: Date())
+            } catch (e: Exception) {
+                try {
+                    val inputFormatMs =
+                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                    val outputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                    val date = inputFormatMs.parse(dateUtc)
+                    outputFormat.format(date ?: Date())
+                } catch (e2: Exception) {
+                    try {
+                        dateUtc.split("T")[1].split(":")[0] + ":" + dateUtc.split("T")[1].split(":")[1] // Fallback to HH:mm
+                    } catch (e3: Exception) {
+                        "00:00"
+                    }
                 }
             }
 
@@ -311,6 +369,42 @@ class HomeViewModel
         fun getRocketName(rocketId: String): String = state.value.allRockets[rocketId]?.name ?: "Unknown Rocket"
 
         fun getLaunchpadName(launchpadId: String): String = state.value.allLaunchpads[launchpadId]?.name ?: "Unknown Launchpad"
+
+        private fun getErrorMessage(error: Throwable): String =
+            when (error) {
+                is HttpException.TooManyRequests -> {
+                    "Rate limit exceeded."
+                }
+                is HttpException.NetworkError -> "Network error. Please check your connection."
+                is HttpException.HttpError -> "Server error (${error.statusCode}). Please try again."
+                else -> error.message ?: "An unexpected error occurred"
+            }
+
+        private fun handleError(error: Throwable) {
+            when (error) {
+                is HttpException.TooManyRequests -> {
+                    val rateLimitError =
+                        RateLimitError(
+                            retryAfterSeconds = error.retryAfterSeconds,
+                            message = getErrorMessage(error),
+                        )
+                    state.value
+                        .copy(
+                            rateLimitError = rateLimitError,
+                            errorMessage = null, // Clear any existing error message
+                        ).sendToState()
+                    // Don't send ShowRateLimitError event to avoid duplicate messages
+                }
+                else -> {
+                    state.value
+                        .copy(
+                            errorMessage = getErrorMessage(error),
+                            rateLimitError = null, // Clear any existing rate limit error
+                        ).sendToState()
+                    HomeEvent.ShowError(getErrorMessage(error)).sendToEvent()
+                }
+            }
+        }
     }
 
 data class WeatherData(

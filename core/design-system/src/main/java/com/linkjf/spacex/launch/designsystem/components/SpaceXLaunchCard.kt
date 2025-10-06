@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXColors
+import com.linkjf.spacex.launch.designsystem.theme.SpaceXIcons
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXTheme
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
@@ -27,7 +28,8 @@ import com.linkjf.spacex.launch.designsystem.theme.SpaceXTypography
 data class LaunchData(
     val id: String,
     val name: String,
-    val dateUtc: String,
+    val date: String,
+    val time: String,
     val rocketId: String,
     val launchpadId: String,
     val patchImageUrl: String? = null,
@@ -76,25 +78,43 @@ fun SpaceXLaunchCard(
                         color = textColor,
                     )
 
-                    Text(
-                        text = launch.dateUtc,
-                        style = SpaceXTypography.Typography.bodyLarge,
-                        color = textColor,
-                    )
-
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium2),
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top,
                     ) {
-                        Text(
-                            text = launch.rocketId,
-                            style = SpaceXTypography.Typography.bodyLarge,
-                            color = textColor,
-                        )
-                        Text(
-                            text = launch.launchpadId,
-                            style = SpaceXTypography.Typography.bodyLarge,
-                            color = textColor,
-                        )
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
+                        ) {
+                            Text(
+                                text = launch.date,
+                                style = SpaceXTypography.Typography.bodyLarge,
+                                color = textColor,
+                            )
+                            Text(
+                                text = launch.rocketId,
+                                style = SpaceXTypography.Typography.bodyLarge,
+                                color = textColor,
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
+                        ) {
+                            Text(
+                                text = launch.time,
+                                style = SpaceXTypography.Typography.bodyLarge,
+                                color = textColor,
+                            )
+
+                            Text(
+                                text = launch.launchpadId,
+                                style = SpaceXTypography.Typography.bodyLarge,
+                                color = textColor,
+                            )
+                        }
                     }
                 }
 
@@ -106,15 +126,6 @@ fun SpaceXLaunchCard(
 
             Spacer(modifier = Modifier.height(SpaceXSpacing.Medium))
 
-            Text(
-                text = launch.countdown,
-                style = SpaceXTypography.countdownTimer,
-                color = textColor,
-                modifier = Modifier.align(Alignment.End),
-            )
-
-            Spacer(modifier = Modifier.height(SpaceXSpacing.Medium))
-
             HorizontalDivider(
                 color = dividerColor,
                 thickness = SpaceXSpacing.DividerThicknessDefault.dp,
@@ -122,24 +133,55 @@ fun SpaceXLaunchCard(
 
             Spacer(modifier = Modifier.height(SpaceXSpacing.Medium))
 
-            SpaceXWeatherMetricsRow(
-                windSpeed = launch.windSpeed,
-                cloudCover = launch.cloudCover,
-                rainfall = launch.rainfall,
-                textColor = textColor,
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-            )
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SpaceXWeatherMetricsRow(
+                    windSpeed = launch.windSpeed,
+                    cloudCover = launch.cloudCover,
+                    rainfall = launch.rainfall,
+                    textColor = textColor,
+                )
 
-            Spacer(modifier = Modifier.height(SpaceXSpacing.Medium))
+                Text(
+                    text = launch.countdown,
+                    style = SpaceXTypography.countdownTimer,
+                    color = textColor,
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(SpaceXSpacing.Small))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                SpaceXPlayButton(
-                    onClick = onWatchClick,
+                SpaceXWeatherMetric(
+                    value = launch.rainfall,
+                    label = "Rain:",
+                    icon = SpaceXIcons.Rain,
+                    textColor = textColor,
                     iconColor = textColor,
                 )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(SpaceXSpacing.Small),
+                ) {
+                    SpaceXPlayButton(
+                        onClick = onWatchClick,
+                        iconColor = textColor,
+                    )
+                    Text(
+                        text = "Watch",
+                        style = SpaceXTypography.Typography.bodyMedium,
+                        color = textColor,
+                    )
+                }
             }
         }
     }
@@ -154,7 +196,8 @@ private fun SpaceXLaunchCardPreview() {
                 LaunchData(
                     id = "launch_1",
                     name = "Starlink Group 2-38",
-                    dateUtc = "Oct/4/2025     10:00",
+                    date = "Oct/4/2025",
+                    time = "10:00",
                     rocketId = "Falcon 4",
                     launchpadId = "LCS-421",
                     patchImageUrl = null,
@@ -179,7 +222,8 @@ private fun SpaceXLaunchCardWithImagePreview() {
                 LaunchData(
                     id = "launch_2",
                     name = "Falcon Heavy Demo",
-                    dateUtc = "Nov/15/2025   14:30",
+                    date = "Nov/15/2025",
+                    time = "14:30",
                     rocketId = "Falcon Heavy",
                     launchpadId = "KSC LC-39A",
                     patchImageUrl = "https://images2.imgbox.com/94/f2/NN6z45OK_o.png",
@@ -204,7 +248,8 @@ private fun SpaceXLaunchCardLongNamePreview() {
                 LaunchData(
                     id = "launch_3",
                     name = "Starlink Group 6-45 Mission",
-                    dateUtc = "Dec/20/2025   08:45",
+                    date = "Dec/20/2025",
+                    time = "08:45",
                     rocketId = "Falcon 9",
                     launchpadId = "SLC-40",
                     patchImageUrl = null,
