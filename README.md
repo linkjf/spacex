@@ -6,7 +6,7 @@ A modern Android application built with Jetpack Compose that displays SpaceX lau
 
 | Home Screen | Launch Details |
 |-------------|----------------|
-| ![Home Screen](screenshots/home_screen.png) | ![Launch Details](screenshots/launch_details.png) |
+| ![Home Screen](screenshots/home.png) | ![Launch Details](screenshots/launch_details.png) |
 
 ## Features
 
