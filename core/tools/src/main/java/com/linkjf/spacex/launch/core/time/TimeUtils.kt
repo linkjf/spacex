@@ -19,8 +19,6 @@ object TimeConstants {
 }
 
 object TimeUtils {
-
-
     fun String.formatToLaunchDate(): String =
         try {
             val inputFormat =
@@ -69,10 +67,12 @@ object TimeUtils {
                 outputFormat.format(date ?: Date())
             } catch (e2: Exception) {
                 try {
-                    this.split("T")[1]
+                    this
+                        .split("T")[1]
                         .split(":")[0] + ":" +
-                            this.split("T")[1]
-                                .split(":")[1]
+                        this
+                            .split("T")[1]
+                            .split(":")[1]
                 } catch (e3: Exception) {
                     "00:00"
                 }
