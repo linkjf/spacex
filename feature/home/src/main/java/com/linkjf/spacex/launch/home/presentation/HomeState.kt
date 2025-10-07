@@ -2,10 +2,15 @@ package com.linkjf.spacex.launch.home.presentation
 
 data class HomeState(
     val selectedFilter: LaunchFilter = LaunchFilter.UPCOMING,
-    val selectedTabIndex: Int = 0,
+    val selectedTabIndex: Int = TAB_INDEX_UPCOMING,
     val errorMessage: String? = null,
     val rateLimitError: RateLimitError? = null,
-)
+) {
+    companion object {
+        const val TAB_INDEX_UPCOMING = 0
+        const val TAB_INDEX_PAST = 1
+    }
+}
 
 enum class LaunchFilter {
     UPCOMING,

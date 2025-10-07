@@ -7,8 +7,12 @@ import com.linkjf.spacex.launch.designsystem.components.LaunchListItem
 import com.linkjf.spacex.launch.home.domain.usecase.GetPastLaunchesUseCase
 import com.linkjf.spacex.launch.home.domain.usecase.GetUpcomingLaunchesUseCase
 import com.linkjf.spacex.launch.mvi.StateViewModel
+import com.linkjf.spacex.launch.network.RateLimitInterceptor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,11 +21,21 @@ class HomeViewModel
     constructor(
         private val getUpcomingLaunches: GetUpcomingLaunchesUseCase,
         private val getPastLaunches: GetPastLaunchesUseCase,
+        private val rateLimitInterceptor: RateLimitInterceptor,
     ) : StateViewModel<HomeState, HomeEvent, HomeAction>(HomeState()) {
         val upcomingLaunches: Flow<PagingData<LaunchListItem>> =
             getUpcomingLaunches().cachedIn(viewModelScope)
         val pastLaunches: Flow<PagingData<LaunchListItem>> =
             getPastLaunches().cachedIn(viewModelScope)
+
+        init {
+            checkRateLimitStatus()
+            startRateLimitCountdown()
+        }
+
+        companion object {
+            private const val COUNTDOWN_UPDATE_INTERVAL_MS = 1000L
+        }
 
         override fun reduce(action: HomeAction) {
             when (action) {
@@ -43,7 +57,12 @@ class HomeViewModel
         }
 
         private fun selectTab(tabIndex: Int) {
-            val filter = if (tabIndex == 0) LaunchFilter.UPCOMING else LaunchFilter.PACK
+            val filter =
+                if (tabIndex == HomeState.TAB_INDEX_UPCOMING) {
+                    LaunchFilter.UPCOMING
+                } else {
+                    LaunchFilter.PACK
+                }
             selectFilter(filter)
         }
 
@@ -53,7 +72,12 @@ class HomeViewModel
             state.value
                 .copy(
                     selectedFilter = filter,
-                    selectedTabIndex = if (filter == LaunchFilter.UPCOMING) 0 else 1,
+                    selectedTabIndex =
+                        if (filter == LaunchFilter.UPCOMING) {
+                            HomeState.TAB_INDEX_UPCOMING
+                        } else {
+                            HomeState.TAB_INDEX_PAST
+                        },
                 ).sendToState()
         }
 
@@ -70,5 +94,41 @@ class HomeViewModel
 
         private fun retry() {
             dismissError()
+        }
+
+        private fun checkRateLimitStatus() {
+            val rateLimitInfo = rateLimitInterceptor.getRateLimitInfo()
+            if (rateLimitInfo != null) {
+                state.value
+                    .copy(
+                        rateLimitError =
+                            RateLimitError(
+                                retryAfterSeconds = rateLimitInfo.remainingSeconds,
+                                message = "", // Will be set in UI layer
+                            ),
+                    ).sendToState()
+            }
+        }
+
+        private fun startRateLimitCountdown() {
+            viewModelScope.launch {
+                while (isActive) {
+                    delay(COUNTDOWN_UPDATE_INTERVAL_MS)
+                    val rateLimitInfo = rateLimitInterceptor.getRateLimitInfo()
+
+                    if (rateLimitInfo != null && rateLimitInfo.remainingSeconds > 0) {
+                        state.value
+                            .copy(
+                                rateLimitError =
+                                    RateLimitError(
+                                        retryAfterSeconds = rateLimitInfo.remainingSeconds,
+                                        message = "", // Will be set in UI layer
+                                    ),
+                            ).sendToState()
+                    } else if (state.value.rateLimitError != null) {
+                        dismissRateLimitError()
+                    }
+                }
+            }
         }
     }

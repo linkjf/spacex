@@ -26,6 +26,7 @@ object NetworkModule {
             ignoreUnknownKeys = true
             isLenient = true
             encodeDefaults = true
+            coerceInputValues = true
         }
 
     @Provides
@@ -36,9 +37,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        rateLimitInterceptor: RateLimitInterceptor,
+    ): OkHttpClient =
         OkHttpClient
             .Builder()
+            .addInterceptor(rateLimitInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(NetworkConstants.CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(NetworkConstants.READ_TIMEOUT, TimeUnit.SECONDS)

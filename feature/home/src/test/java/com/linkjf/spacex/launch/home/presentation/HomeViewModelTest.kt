@@ -2,27 +2,32 @@ package com.linkjf.spacex.launch.home.presentation
 
 import androidx.paging.PagingData
 import app.cash.turbine.test
-import com.linkjf.spacex.launch.designsystem.components.LaunchListItem
 import com.linkjf.spacex.launch.home.domain.usecase.GetPastLaunchesUseCase
 import com.linkjf.spacex.launch.home.domain.usecase.GetUpcomingLaunchesUseCase
+import com.linkjf.spacex.launch.network.RateLimitInterceptor
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
     private val mockGetUpcomingLaunches = mockk<GetUpcomingLaunchesUseCase>(relaxed = true)
     private val mockGetPastLaunches = mockk<GetPastLaunchesUseCase>(relaxed = true)
+    private val mockRateLimitInterceptor = mockk<RateLimitInterceptor>(relaxed = true)
 
     private fun createViewModel(): HomeViewModel {
         every { mockGetUpcomingLaunches() } returns flowOf(PagingData.empty())
         every { mockGetPastLaunches() } returns flowOf(PagingData.empty())
-        return HomeViewModel(mockGetUpcomingLaunches, mockGetPastLaunches)
+        every { mockRateLimitInterceptor.getRateLimitInfo() } returns null
+        return HomeViewModel(
+            mockGetUpcomingLaunches,
+            mockGetPastLaunches,
+            mockRateLimitInterceptor,
+        )
     }
 
     @Test
@@ -33,7 +38,7 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(LaunchFilter.UPCOMING, viewModel.state.value.selectedFilter)
-            assertEquals(0, viewModel.state.value.selectedTabIndex)
+            assertEquals(HomeState.TAB_INDEX_UPCOMING, viewModel.state.value.selectedTabIndex)
             assertEquals(null, viewModel.state.value.errorMessage)
             assertEquals(null, viewModel.state.value.rateLimitError)
         }
@@ -63,7 +68,7 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(LaunchFilter.PACK, viewModel.state.value.selectedFilter)
-            assertEquals(1, viewModel.state.value.selectedTabIndex)
+            assertEquals(HomeState.TAB_INDEX_PAST, viewModel.state.value.selectedTabIndex)
         }
 
     @Test
@@ -88,11 +93,11 @@ class HomeViewModelTest {
             val viewModel = createViewModel()
 
             // When
-            viewModel.reduce(HomeAction.SelectTab(1))
+            viewModel.reduce(HomeAction.SelectTab(HomeState.TAB_INDEX_PAST))
 
             // Then
             assertEquals(LaunchFilter.PACK, viewModel.state.value.selectedFilter)
-            assertEquals(1, viewModel.state.value.selectedTabIndex)
+            assertEquals(HomeState.TAB_INDEX_PAST, viewModel.state.value.selectedTabIndex)
         }
 
     @Test
@@ -143,7 +148,7 @@ class HomeViewModelTest {
             every { mockGetUpcomingLaunches() } returns flowOf(PagingData.empty())
 
             // When
-            val viewModel = HomeViewModel(mockGetUpcomingLaunches, mockGetPastLaunches)
+            val viewModel = createViewModel()
 
             // Then
             viewModel.upcomingLaunches.test {
@@ -159,7 +164,7 @@ class HomeViewModelTest {
             every { mockGetPastLaunches() } returns flowOf(PagingData.empty())
 
             // When
-            val viewModel = HomeViewModel(mockGetUpcomingLaunches, mockGetPastLaunches)
+            val viewModel = createViewModel()
 
             // Then
             viewModel.pastLaunches.test {

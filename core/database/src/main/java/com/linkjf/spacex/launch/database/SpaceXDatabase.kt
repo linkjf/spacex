@@ -25,7 +25,7 @@ import com.linkjf.spacex.launch.database.entity.RocketEntity
         LaunchpadEntity::class,
         LaunchesRemoteKeysEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

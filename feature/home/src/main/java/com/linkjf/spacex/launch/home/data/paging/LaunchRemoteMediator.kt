@@ -12,7 +12,9 @@ import com.linkjf.spacex.launch.database.entity.LaunchesRemoteKeysEntity
 import com.linkjf.spacex.launch.home.data.mapper.DatabaseMapper
 import com.linkjf.spacex.launch.home.data.mapper.LaunchLibraryLaunchMapper
 import com.linkjf.spacex.launch.home.data.remote.LaunchLibraryApi
+import com.linkjf.spacex.launch.network.RateLimitInterceptor
 import javax.inject.Inject
+import retrofit2.HttpException as RetrofitHttpException
 
 @OptIn(ExperimentalPagingApi::class)
 class LaunchRemoteMediator
@@ -21,6 +23,7 @@ class LaunchRemoteMediator
         private val database: SpaceXDatabase,
         private val api: LaunchLibraryApi,
         private val mapper: LaunchLibraryLaunchMapper,
+        private val rateLimitInterceptor: RateLimitInterceptor,
         private val isUpcoming: Boolean,
     ) : RemoteMediator<Int, LaunchEntity>() {
         private val launchDao = database.launchDao()
@@ -34,10 +37,13 @@ class LaunchRemoteMediator
             )
 
             return if (cachedCount == 0) {
-                Log.d("LaunchRemoteMediator", "No cached data, launching initial refresh")
+                Log.d("LaunchRemoteMediator", "No cached data, will fetch in background")
                 InitializeAction.LAUNCH_INITIAL_REFRESH
             } else {
-                Log.d("LaunchRemoteMediator", "Has cached data, skipping initial refresh")
+                Log.d(
+                    "LaunchRemoteMediator",
+                    "Has cached data ($cachedCount items), showing local first",
+                )
                 InitializeAction.SKIP_INITIAL_REFRESH
             }
         }
@@ -57,9 +63,35 @@ class LaunchRemoteMediator
                     }
 
                     LoadType.APPEND -> {
-                        val last = state.lastItemOrNull() ?: return MediatorResult.Success(true)
-                        remoteKeysDao.remoteKeysByLaunch(last.id, isUpcoming)?.nextOffset
-                            ?: return MediatorResult.Success(true)
+                        val last = state.lastItemOrNull()
+                        if (last == null) {
+                            Log.d("LaunchRemoteMediator", "APPEND: No last item, ending pagination")
+                            return MediatorResult.Success(endOfPaginationReached = true)
+                        }
+
+                        val remoteKey = remoteKeysDao.remoteKeysByLaunch(last.id, isUpcoming)
+                        if (remoteKey == null) {
+                            Log.e(
+                                "LaunchRemoteMediator",
+                                "APPEND: No remote key found for launch ${last.id}, isUpcoming=$isUpcoming",
+                            )
+                            return MediatorResult.Error(Exception("Remote key not found"))
+                        }
+
+                        val nextOffset = remoteKey.nextOffset
+                        if (nextOffset == null) {
+                            Log.d(
+                                "LaunchRemoteMediator",
+                                "APPEND: nextOffset is null, reached end of pagination",
+                            )
+                            return MediatorResult.Success(endOfPaginationReached = true)
+                        }
+
+                        Log.d(
+                            "LaunchRemoteMediator",
+                            "APPEND: nextOffset=$nextOffset for launch ${last.id}",
+                        )
+                        nextOffset
                     }
                 }
 
@@ -83,6 +115,11 @@ class LaunchRemoteMediator
                     "LaunchRemoteMediator",
                     "API Response: results=${response.results.size}, next=${response.next}, endOfList=$endOfList",
                 )
+
+                if (launches.isEmpty()) {
+                    Log.d("LaunchRemoteMediator", "Empty response, ending pagination")
+                    return MediatorResult.Success(endOfPaginationReached = true)
+                }
 
                 database.withTransaction {
                     if (loadType == LoadType.REFRESH) {
@@ -116,6 +153,17 @@ class LaunchRemoteMediator
                     "Success: inserted ${launches.size} launches, endOfPaginationReached=$endOfList",
                 )
                 MediatorResult.Success(endOfPaginationReached = endOfList)
+            } catch (e: RetrofitHttpException) {
+                if (e.code() == 429) {
+                    val rateLimitInfo = rateLimitInterceptor.getRateLimitInfo()
+                    Log.e(
+                        "LaunchRemoteMediator",
+                        "Rate limit exceeded (429), remaining: ${rateLimitInfo?.remainingSeconds}s",
+                    )
+                } else {
+                    Log.e("LaunchRemoteMediator", "HTTP error ${e.code()}: ${e.message()}")
+                }
+                MediatorResult.Error(e)
             } catch (t: Throwable) {
                 Log.e("LaunchRemoteMediator", "Error loading data", t)
                 MediatorResult.Error(t)

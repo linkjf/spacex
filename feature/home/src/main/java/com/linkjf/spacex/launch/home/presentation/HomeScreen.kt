@@ -7,14 +7,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.linkjf.spacex.launch.core.time.TimeUtils
 import com.linkjf.spacex.launch.designsystem.components.SpaceXErrorCard
 import com.linkjf.spacex.launch.designsystem.components.SpaceXLaunchListWithPaging3
 import com.linkjf.spacex.launch.designsystem.components.SpaceXRateLimitCard
 import com.linkjf.spacex.launch.designsystem.components.SpaceXScreenHeader
 import com.linkjf.spacex.launch.designsystem.components.SpaceXTabSelector
 import com.linkjf.spacex.launch.designsystem.theme.SpaceXSpacing
+import com.linkjf.spacex.launch.home.R
 import com.linkjf.spacex.launch.mvi.EventEffect
 
 @Composable
@@ -30,14 +33,11 @@ fun HomeScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    val upcomingLaunchesPagingItems = viewModel.upcomingLaunches.collectAsLazyPagingItems()
-    val pastLaunchesPagingItems = viewModel.pastLaunches.collectAsLazyPagingItems()
-
     val currentPagingItems =
         if (state.selectedTabIndex == 0) {
-            upcomingLaunchesPagingItems
+            viewModel.upcomingLaunches.collectAsLazyPagingItems()
         } else {
-            pastLaunchesPagingItems
+            viewModel.pastLaunches.collectAsLazyPagingItems()
         }
 
     EventEffect(flow = viewModel.event) { event ->
@@ -56,13 +56,17 @@ fun HomeScreen(
         verticalArrangement = Arrangement.spacedBy(SpaceXSpacing.Medium),
     ) {
         SpaceXScreenHeader(
-            title = "Launches",
+            title = stringResource(R.string.home_screen_title),
             onSearchClick = { viewModel.reduce(HomeAction.TapSettings) },
-            searchContentDescription = "Settings",
+            searchContentDescription = stringResource(R.string.settings_content_description),
         )
 
         SpaceXTabSelector(
-            tabs = listOf("Upcoming", "Pack"),
+            tabs =
+                listOf(
+                    stringResource(R.string.tab_label_upcoming),
+                    stringResource(R.string.tab_label_past),
+                ),
             selectedIndex = state.selectedTabIndex,
             onTabSelected = { index ->
                 viewModel.reduce(HomeAction.SelectTab(index))
@@ -71,7 +75,11 @@ fun HomeScreen(
 
         state.rateLimitError?.let { rateLimitError ->
             SpaceXRateLimitCard(
-                message = rateLimitError.message,
+                message =
+                    stringResource(
+                        R.string.rate_limit_message,
+                        TimeUtils.formatDuration(rateLimitError.retryAfterSeconds ?: 0),
+                    ),
                 retryAfterSeconds = rateLimitError.retryAfterSeconds,
                 onDismiss = { viewModel.reduce(HomeAction.DismissRateLimitError) },
             )
@@ -93,10 +101,10 @@ fun HomeScreen(
                 viewModel.reduce(HomeAction.TapWatch(launchItem.id))
             },
             emptyMessage =
-                if (state.selectedTabIndex == 0) {
-                    "No upcoming launches available"
+                if (state.selectedTabIndex == HomeState.TAB_INDEX_UPCOMING) {
+                    stringResource(R.string.empty_message_upcoming)
                 } else {
-                    "No past launches available"
+                    stringResource(R.string.empty_message_past)
                 },
         )
     }
