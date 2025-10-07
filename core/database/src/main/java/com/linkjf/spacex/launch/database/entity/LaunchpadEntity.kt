@@ -4,9 +4,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
-/**
- * Database entity for storing launchpad data locally
- */
 @Entity(tableName = "launchpads")
 @Serializable
 data class LaunchpadEntity(
@@ -22,8 +19,8 @@ data class LaunchpadEntity(
     val longitude: Double,
     val launchAttempts: Int,
     val launchSuccesses: Int,
-    val rockets: String? = null, // JSON serialized list
-    val launches: String? = null, // JSON serialized list
+    val rockets: String? = null,
+    val launches: String? = null,
     val details: String,
     val lastUpdated: Long = System.currentTimeMillis(),
 )

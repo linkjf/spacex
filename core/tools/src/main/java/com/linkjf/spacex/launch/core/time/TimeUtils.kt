@@ -10,7 +10,6 @@ object TimeConstants {
     const val LAUNCH_DATE_INPUT_FORMAT_WITH_MS = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     const val LAUNCH_DATE_OUTPUT_FORMAT = "MMM/dd/yyyy"
     const val LAUNCH_TIME_OUTPUT_FORMAT = "HH:mm"
-
     const val UNKNOWN_DATE = "Unknown"
     const val UNKNOWN_TIME = "Unknown"
     const val COMPLETED_STATUS = "Completed"
@@ -19,13 +18,9 @@ object TimeConstants {
     const val LAUNCHED_STATUS = "Launched"
 }
 
-/**
- * Extension functions for time formatting and calculations
- */
 object TimeUtils {
-    /**
-     * Formats a UTC date string to a readable date format
-     */
+
+
     fun String.formatToLaunchDate(): String =
         try {
             val inputFormat =
@@ -46,7 +41,7 @@ object TimeUtils {
                 val date = inputFormatMs.parse(this)
                 outputFormat.format(date ?: Date())
             } catch (e2: Exception) {
-                this.split("T")[0] // Fallback to just the date part
+                this.split("T")[0]
             }
         }
 
@@ -74,16 +69,16 @@ object TimeUtils {
                 outputFormat.format(date ?: Date())
             } catch (e2: Exception) {
                 try {
-                    this.split("T")[1].split(":")[0] + ":" + this.split("T")[1].split(":")[1] // Fallback to HH:mm
+                    this.split("T")[1]
+                        .split(":")[0] + ":" +
+                            this.split("T")[1]
+                                .split(":")[1]
                 } catch (e3: Exception) {
                     "00:00"
                 }
             }
         }
 
-    /**
-     * Calculates countdown string for upcoming launches
-     */
     fun String.calculateCountdown(isUpcoming: Boolean): String {
         if (!isUpcoming) return TimeConstants.COMPLETED_STATUS
 
@@ -130,6 +125,18 @@ object TimeUtils {
             } catch (e2: Exception) {
                 TimeConstants.TBD_STATUS
             }
+        }
+    }
+
+    fun formatDuration(seconds: Int): String {
+        val hours = seconds / 3600
+        val minutes = (seconds % 3600) / 60
+        val secs = seconds % 60
+
+        return when {
+            hours > 0 -> "${hours}h ${minutes}m ${secs}s"
+            minutes > 0 -> "${minutes}m ${secs}s"
+            else -> "${secs}s"
         }
     }
 }

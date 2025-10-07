@@ -4,9 +4,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
-/**
- * Database entity for storing rocket data locally
- */
 @Entity(tableName = "rockets")
 @Serializable
 data class RocketEntity(
@@ -22,15 +19,15 @@ data class RocketEntity(
     val firstFlight: String,
     val country: String,
     val company: String,
-    val height: String? = null, // JSON serialized Dimension
-    val diameter: String? = null, // JSON serialized Dimension
-    val mass: String? = null, // JSON serialized Mass
-    val payloadWeights: String? = null, // JSON serialized list
-    val firstStage: String? = null, // JSON serialized Stage
-    val secondStage: String? = null, // JSON serialized Stage
-    val engines: String? = null, // JSON serialized Engine
-    val landingLegs: String? = null, // JSON serialized LandingLegs
-    val flickrImages: String? = null, // JSON serialized list
+    val height: String? = null,
+    val diameter: String? = null,
+    val mass: String? = null,
+    val payloadWeights: String? = null,
+    val firstStage: String? = null,
+    val secondStage: String? = null,
+    val engines: String? = null,
+    val landingLegs: String? = null,
+    val flickrImages: String? = null,
     val wikipedia: String,
     val description: String,
     val lastUpdated: Long = System.currentTimeMillis(),

@@ -1,19 +1,13 @@
 package com.linkjf.spacex.launch.home.data.repository
 
-import androidx.paging.PagingData
-import app.cash.turbine.test
 import com.linkjf.spacex.launch.database.SpaceXDatabase
-import com.linkjf.spacex.launch.designsystem.components.LaunchListItem
-import com.linkjf.spacex.launch.home.data.mapper.DatabaseMapper
 import com.linkjf.spacex.launch.home.data.mapper.LaunchLibraryLaunchMapper
 import com.linkjf.spacex.launch.home.data.mapper.LaunchToLaunchListItemMapper
 import com.linkjf.spacex.launch.home.data.remote.LaunchLibraryApi
-import io.mockk.every
+import com.linkjf.spacex.launch.network.RateLimitInterceptor
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -22,6 +16,7 @@ class LaunchRepositoryImplTest {
     private val mockDatabase = mockk<SpaceXDatabase>(relaxed = true)
     private val mockMapper = mockk<LaunchLibraryLaunchMapper>()
     private val mockLaunchToListItemMapper = mockk<LaunchToLaunchListItemMapper>()
+    private val mockRateLimitInterceptor = mockk<RateLimitInterceptor>(relaxed = true)
 
     private val repository =
         LaunchRepositoryImpl(
@@ -29,6 +24,7 @@ class LaunchRepositoryImplTest {
             database = mockDatabase,
             mapper = mockMapper,
             launchToListItemMapper = mockLaunchToListItemMapper,
+            rateLimitInterceptor = mockRateLimitInterceptor,
         )
 
     @Test

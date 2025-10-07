@@ -35,7 +35,7 @@ object LaunchLibraryLaunchMapper {
             flightNumber = null,
             staticFireDateUtc = null,
             tbd = dto.status.name == "To Be Confirmed",
-            net = dto.netPrecision.name == "Minute",
+            net = dto.netPrecision?.name == "Minute",
             window = null,
             rocket = mapRocketToDomain(dto.rocket),
             launchpad = mapLaunchpadToDomain(dto.pad),
@@ -47,7 +47,7 @@ object LaunchLibraryLaunchMapper {
             fairings = null,
             autoUpdate = null,
             dateLocal = null,
-            datePrecision = dto.netPrecision.name,
+            datePrecision = dto.netPrecision?.name,
             dateUnix = null,
         )
 
@@ -63,7 +63,7 @@ object LaunchLibraryLaunchMapper {
             LaunchLinks(
                 patch =
                     LaunchPatch(
-                        small = dto.image?.thumbnailUrl ?: patchUrl,
+                        small = dto.image.thumbnailUrl ?: patchUrl,
                         large = patchUrl,
                     ),
                 webcast = null,

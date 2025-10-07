@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_screen_title">Launches</string>
+    <string name="tab_label_upcoming">Upcoming</string>
+    <string name="tab_label_past">Past</string>
+    <string name="settings_content_description">Settings</string>
+    <string name="empty_message_upcoming">No upcoming launches available</string>
+    <string name="empty_message_past">No past launches available</string>
+    <string name="rate_limit_message">Rate limit exceeded. Please wait %1$s.</string>
+</resources>
+

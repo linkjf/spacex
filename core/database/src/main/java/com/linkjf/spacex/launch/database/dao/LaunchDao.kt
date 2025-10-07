@@ -10,10 +10,27 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LaunchDao {
-    @Query("SELECT * FROM launches WHERE upcoming = :isUpcoming ORDER BY dateUtc ASC")
+    @Query(
+        """
+        SELECT * FROM launches 
+        WHERE upcoming = :isUpcoming 
+        ORDER BY 
+            CASE WHEN :isUpcoming = 1 THEN dateUtc END ASC,
+            CASE WHEN :isUpcoming = 0 THEN dateUtc END DESC
+        """,
+    )
     fun pagingSource(isUpcoming: Boolean): PagingSource<Int, LaunchEntity>
 
-    @Query("SELECT * FROM launches WHERE upcoming = :isUpcoming ORDER BY dateUtc ASC LIMIT :limit OFFSET :offset")
+    @Query(
+        """
+        SELECT * FROM launches 
+        WHERE upcoming = :isUpcoming 
+        ORDER BY 
+            CASE WHEN :isUpcoming = 1 THEN dateUtc END ASC,
+            CASE WHEN :isUpcoming = 0 THEN dateUtc END DESC
+        LIMIT :limit OFFSET :offset
+        """,
+    )
     fun getLaunchesByTypePaginated(
         isUpcoming: Boolean,
         limit: Int,

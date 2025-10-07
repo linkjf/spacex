@@ -2,6 +2,7 @@ package com.linkjf.spacex.launch.home.data.remote.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class LaunchLibraryLaunchDto(
@@ -24,7 +25,7 @@ data class LaunchLibraryLaunchDto(
     @SerialName("net")
     val net: String,
     @SerialName("net_precision")
-    val netPrecision: NetPrecisionDto,
+    val netPrecision: NetPrecisionDto? = null,
     @SerialName("window_end")
     val windowEnd: String? = null,
     @SerialName("window_start")
@@ -220,9 +221,9 @@ data class LaunchMissionDto(
     @SerialName("agencies")
     val agencies: List<LaunchAgencyDto>? = null,
     @SerialName("info_urls")
-    val infoUrls: List<String>? = null,
+    val infoUrls: JsonElement? = null,
     @SerialName("vid_urls")
-    val vidUrls: List<String>? = null,
+    val vidUrls: JsonElement? = null,
 )
 
 @Serializable
@@ -318,7 +319,7 @@ data class LaunchAgencyDto(
     @SerialName("wiki_url")
     val wikiUrl: String? = null,
     @SerialName("social_media_links")
-    val socialMediaLinks: List<String>? = null,
+    val socialMediaLinks: JsonElement? = null,
 )
 
 @Serializable
