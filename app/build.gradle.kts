@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.jacoco)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.hilt)
@@ -106,8 +107,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(project(":feature:home"))
+    implementation(project(":feature:detail"))
     implementation(project(":core:design-system"))
     implementation(project(":core:network"))
     implementation(project(":core:database"))
