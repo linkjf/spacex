@@ -1,5 +1,7 @@
 package com.linkjf.spacex.launch.home.presentation
 
+import com.linkjf.spacex.launch.designsystem.components.LaunchListItem
+
 sealed interface HomeAction {
     data object TapSettings : HomeAction
 
@@ -12,7 +14,7 @@ sealed interface HomeAction {
     ) : HomeAction
 
     data class TapLaunch(
-        val launchId: String,
+        val launchItem: LaunchListItem,
     ) : HomeAction
 
     data class TapWatch(

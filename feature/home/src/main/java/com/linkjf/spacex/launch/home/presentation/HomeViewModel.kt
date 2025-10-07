@@ -46,7 +46,7 @@ class HomeViewModel
 
                 is HomeAction.TapLaunch ->
                     HomeEvent
-                        .NavigateToLaunchDetails(action.launchId)
+                        .NavigateToLaunchDetails(action.launchItem)
                         .sendToEvent()
 
                 is HomeAction.TapWatch -> handleWatchAction(action.launchId)

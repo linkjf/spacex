@@ -21,4 +21,8 @@ object SpaceXIcons {
         @Composable get() = ImageVector.vectorResource(id = R.drawable.ic_rain_condition)
     val Sun: ImageVector = Icons.Default.WbSunny
     val Refresh: ImageVector = Icons.Default.Refresh
+    val ArrowBack: ImageVector
+        @Composable get() = ImageVector.vectorResource(id = R.drawable.ic_arrow_back)
+    val MoreVert: ImageVector
+        @Composable get() = ImageVector.vectorResource(id = R.drawable.ic_more_vert)
 }

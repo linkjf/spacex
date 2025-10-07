@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Detail Screen -->
+    <string name="detail_back_button">Back</string>
+    <string name="detail_menu_button">Menu</string>
+    <string name="detail_watch_button">Watch</string>
+    <string name="detail_on_live">On live</string>
+    <string name="detail_maps_placeholder">MAPS</string>
+    
+    <!-- Weather Labels -->
+    <string name="detail_weather_wind">Wind</string>
+    <string name="detail_weather_gust">Gust</string>
+    <string name="detail_weather_cloud_cover">Cloud cover</string>
+    <string name="detail_weather_precipitation">Presipitation prob</string>
+    <string name="detail_weather_visibility">Visibility</string>
+    <string name="detail_weather_location">Ubication</string>
+    
+    <!-- Status -->
+    <string name="detail_status_scheduled">Scheduled</string>
+    <string name="detail_status_live">LIVE</string>
+    <string name="detail_status_launched">Launched</string>
+    <string name="detail_status_failed">Failed</string>
+    <string name="detail_status_cancelled">Cancelled</string>
+    
+    <!-- Errors -->
+    <string name="detail_error_not_found">Launch not found</string>
+    <string name="detail_error_load_failed">Failed to load launch details</string>
+    <string name="detail_error_webcast_unavailable">Webcast not available</string>
+    
+    <!-- Content Descriptions -->
+    <string name="detail_patch_description">%1$s patch</string>
+    <string name="detail_watch_content_description">Watch launch</string>
+</resources>
+

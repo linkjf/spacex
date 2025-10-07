@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.linkjf.spacex.launch.core.time.TimeUtils
+import com.linkjf.spacex.launch.designsystem.components.LaunchListItem
 import com.linkjf.spacex.launch.designsystem.components.SpaceXErrorCard
 import com.linkjf.spacex.launch.designsystem.components.SpaceXLaunchListWithPaging3
 import com.linkjf.spacex.launch.designsystem.components.SpaceXRateLimitCard
@@ -24,7 +25,7 @@ import com.linkjf.spacex.launch.mvi.EventEffect
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onSettingsClick: () -> Unit = {},
-    onLaunchClick: (String) -> Unit = {},
+    onLaunchClick: (LaunchListItem) -> Unit = {},
     onWatchClick: (String) -> Unit = {},
     onOpenWebcast: (String) -> Unit = {},
     onOpenArticle: (String) -> Unit = {},
@@ -43,7 +44,7 @@ fun HomeScreen(
     EventEffect(flow = viewModel.event) { event ->
         when (event) {
             HomeEvent.NavigateToSettings -> onSettingsClick()
-            is HomeEvent.NavigateToLaunchDetails -> onLaunchClick(event.launchId)
+            is HomeEvent.NavigateToLaunchDetails -> onLaunchClick(event.launchItem)
             is HomeEvent.OpenWebcast -> onOpenWebcast(event.url)
             is HomeEvent.OpenArticle -> onOpenArticle(event.url)
             is HomeEvent.OpenWikipedia -> onOpenWikipedia(event.url)
@@ -95,7 +96,7 @@ fun HomeScreen(
         SpaceXLaunchListWithPaging3(
             lazyPagingItems = currentPagingItems,
             onLaunchClick = { launchItem ->
-                viewModel.reduce(HomeAction.TapLaunch(launchItem.id))
+                viewModel.reduce(HomeAction.TapLaunch(launchItem))
             },
             onWatchClick = { launchItem ->
                 viewModel.reduce(HomeAction.TapWatch(launchItem.id))
